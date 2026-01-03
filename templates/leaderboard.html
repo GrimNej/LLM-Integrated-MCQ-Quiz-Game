@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- ================================================================== -->
+    <!-- HEAD SECTION -->
+    <!-- Contains metadata, title, and links to stylesheets -->
+    <!-- ================================================================== -->
+    
+    <!-- Set the character encoding for the document to UTF-8 -->
+    <meta charset="UTF-8">
+    
+    <!-- Make the page responsive on mobile devices -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Title that appears in the browser tab -->
+    <title>MCQ Quiz Game - Leaderboard</title>
+    
+    <!-- Link to our external CSS stylesheet for styling -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- ================================================================== -->
+    <!-- HEADER NAVIGATION BAR -->
+    <!-- Present on all pages except Login, Quiz, and Results -->
+    <!-- ================================================================== -->
+    
+    <header class="navbar">
+        
+        <!-- Left side of navbar - Logo/App name -->
+        <div class="navbar-brand">
+            
+            <!-- Clickable logo that goes to home page -->
+            <a href="/home" class="navbar-logo">MCQ Quiz Game</a>
+            
+        </div>
+        
+        <!-- Right side of navbar - Navigation links -->
+        <nav class="navbar-menu">
+            
+            <!-- Play link - goes to game setup page -->
+            <a href="/play" class="navbar-link">Play</a>
+            
+            <!-- Leaderboard link - currently active page -->
+            <a href="/leaderboard" class="navbar-link active">Leaderboard</a>
+            
+            <!-- Account link - goes to account settings page -->
+            <a href="/account" class="navbar-link">Account</a>
+            
+            <!-- Logout button - logs out and redirects to login -->
+            <button class="navbar-logout" onclick="handleLogout()">Logout</button>
+            
+        </nav>
+        
+        <!-- Display current username -->
+        <div class="navbar-user">
+            
+            <!-- This will be filled by JavaScript with the username -->
+            <span id="navbar-username">Logged in as: </span>
+            
+        </div>
+        
+    </header>
+    
+    <!-- ================================================================== -->
+    <!-- MAIN CONTENT AREA -->
+    <!-- Contains the leaderboard table -->
+    <!-- ================================================================== -->
+    
+    <main class="main-content">
+        
+        <!-- ============================================================== -->
+        <!-- LEADERBOARD SECTION -->
+        <!-- Contains title and the leaderboard table -->
+        <!-- ============================================================== -->
+        
+        <section class="leaderboard-section">
+            
+            <!-- Page title -->
+            <h1 class="page-title">Leaderboard</h1>
+            
+            <!-- Page subtitle with explanation -->
+            <p class="page-subtitle">Players ranked by win rate. Score 7 or more to win a game!</p>
+            
+            <!-- ========================================================== -->
+            <!-- LEADERBOARD CARD -->
+            <!-- Contains the table with player rankings -->
+            <!-- ========================================================== -->
+            
+            <div class="leaderboard-card">
+                
+                <!-- ====================================================== -->
+                <!-- LEADERBOARD TABLE CONTAINER -->
+                <!-- Allows horizontal scrolling on small screens -->
+                <!-- ====================================================== -->
+                
+                <div class="table-container" id="table-container">
+                    
+                    <!-- Loading message shown while fetching data -->
+                    <p class="loading-message" id="loading-message">Loading leaderboard...</p>
+                    
+                    <!-- Table will be inserted here by JavaScript -->
+                    
+                </div>
+                
+            </div>
+            
+            <!-- ========================================================== -->
+            <!-- LEADERBOARD INFO BOX -->
+            <!-- Explains how ranking works -->
+            <!-- ========================================================== -->
+            
+            <div class="leaderboard-info">
+                
+                <!-- Info title -->
+                <h3 class="info-title">How Ranking Works</h3>
+                
+                <!-- Info list -->
+                <ul class="info-list">
+                    
+                    <!-- Win rate explanation -->
+                    <li class="info-item">
+                        <strong>Win Rate</strong> = (Games Won / Games Played) x 100%
+                    </li>
+                    
+                    <!-- Ranking order explanation -->
+                    <li class="info-item">
+                        Players are sorted by <strong>highest win rate first</strong>
+                    </li>
+                    
+                    <!-- Tie breaker explanation -->
+                    <li class="info-item">
+                        If win rates are equal, the player with <strong>more games played</strong> ranks higher
+                    </li>
+                    
+                    <!-- Win condition reminder -->
+                    <li class="info-item">
+                        A game is <strong>won</strong> when you score 7 or more out of 10
+                    </li>
+                    
+                </ul>
+                
+            </div>
+            
+            <!-- ========================================================== -->
+            <!-- YOUR RANK DISPLAY -->
+            <!-- Shows the current user's rank prominently -->
+            <!-- ========================================================== -->
+            
+            <div class="your-rank-card" id="your-rank-card">
+                
+                <!-- Will be filled by JavaScript -->
+                <p class="your-rank-text" id="your-rank-text">Loading your rank...</p>
+                
+            </div>
+            
+        </section>
+        
+    </main>
+    
+    <!-- ================================================================== -->
+    <!-- JAVASCRIPT SECTION -->
+    <!-- Contains all the interactive functionality for this page -->
+    <!-- ================================================================== -->
+    
+    <script>
+        // ==================================================================
+        // GLOBAL VARIABLES
+        // ==================================================================
+        
+        // Store the current user's ID for highlighting
+        let currentUserId = null;
+        
+        // ==================================================================
+        // PAGE INITIALIZATION
+        // ==================================================================
+        
+        /**
+         * Runs when the page finishes loading.
+         * Fetches user info and leaderboard data.
+         */
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // Fetch and display username in navbar
+            loadUserInfo();
+            
+            // Fetch and display leaderboard data
+            loadLeaderboard();
+            
+        });
+        
+        // ==================================================================
+        // LOAD USER INFO
+        // ==================================================================
+        
+        /**
+         * Fetches the current user's information from the server.
+         * Updates the navbar with the username.
+         */
+        async function loadUserInfo() {
+            
+            try {
+                
+                // Send a GET request to the user stats API endpoint
+                const response = await fetch('/api/user/stats', {
+                    
+                    // Use GET method for fetching data
+                    method: 'GET',
+                    
+                    // Set headers to accept JSON response
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                    
+                });
+                
+                // Parse the JSON response from the server
+                const data = await response.json();
+                
+                // Check if the request was successful
+                if (data.success) {
+                    
+                    // Update the navbar username display
+                    document.getElementById('navbar-username').textContent = 
+                        'Logged in as: ' + data.username;
+                    
+                } else {
+                    
+                    // If not logged in, redirect to login page
+                    if (response.status === 401) {
+                        window.location.href = '/login';
+                    }
+                    
+                }
+                
+            } catch (error) {
+                
+                // Log any network or parsing errors
+                console.error('Error loading user info:', error);
+                
+            }
+            
+        }
+        
+        // ==================================================================
+        // LOAD LEADERBOARD
+        // ==================================================================
+        
+        /**
+         * Fetches the leaderboard data from the server.
+         * Displays the leaderboard table with all players ranked.
+         */
+        async function loadLeaderboard() {
+            
+            // Get reference to the table container
+            const tableContainer = document.getElementById('table-container');
+            
+            // Get reference to the loading message
+            const loadingMessage = document.getElementById('loading-message');
+            
+            try {
+                
+                // Send a GET request to the leaderboard API endpoint
+                const response = await fetch('/api/leaderboard', {
+                    
+                    // Use GET method for fetching data
+                    method: 'GET',
+                    
+                    // Set headers to accept JSON response
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                    
+                });
+                
+                // Parse the JSON response from the server
+                const data = await response.json();
+                
+                // Check if the request was successful
+                if (data.success) {
+                    
+                    // Store the current user ID for highlighting
+                    currentUserId = data.current_user_id;
+                    
+                    // Get the leaderboard array
+                    const leaderboard = data.leaderboard;
+                    
+                    // Check if there are any players
+                    if (leaderboard.length === 0) {
+                        
+                        // Display message if no players exist
+                        tableContainer.innerHTML = `
+                            <div class="no-data">
+                                <p>No players on the leaderboard yet.</p>
+                                <p>Be the first to play a game!</p>
+                            </div>
+                        `;
+                        
+                        // Update the your rank card
+                        document.getElementById('your-rank-text').textContent = 
+                            'Play a game to get on the leaderboard!';
+                        
+                    } else {
+                        
+                        // Build the leaderboard table
+                        buildLeaderboardTable(leaderboard);
+                        
+                        // Update the your rank card
+                        updateYourRank(leaderboard);
+                        
+                    }
+                    
+                } else {
+                    
+                    // Display error message if request failed
+                    tableContainer.innerHTML = `
+                        <div class="error-message">
+                            <p>Failed to load leaderboard.</p>
+                            <p>${data.message}</p>
+                        </div>
+                    `;
+                    
+                    // If not logged in, redirect to login page
+                    if (response.status === 401) {
+                        window.location.href = '/login';
+                    }
+                    
+                }
+                
+            } catch (error) {
+                
+                // Log any network or parsing errors
+                console.error('Error loading leaderboard:', error);
+                
+                // Display error message in the container
+                tableContainer.innerHTML = `
+                    <div class="error-message">
+                        <p>An error occurred while loading the leaderboard.</p>
+                        <p>Please try refreshing the page.</p>
+                    </div>
+                `;
+                
+            }
+            
+        }
+        
+        // ==================================================================
+        // BUILD LEADERBOARD TABLE
+        // ==================================================================
+        
+        /**
+         * Builds the HTML table for the leaderboard.
+         * Highlights the current user's row.
+         * 
+         * @param {Array} leaderboard - Array of player objects with ranking data
+         */
+        function buildLeaderboardTable(leaderboard) {
+            
+            // Get reference to the table container
+            const tableContainer = document.getElementById('table-container');
+            
+            // Start building the table HTML
+            let tableHTML = `
+                <table class="leaderboard-table">
+                    
+                    <!-- Table header row -->
+                    <thead>
+                        <tr>
+                            <th class="rank-column">Rank</th>
+                            <th class="username-column">Username</th>
+                            <th class="games-column">Games Played</th>
+                            <th class="wins-column">Games Won</th>
+                            <th class="winrate-column">Win Rate</th>
+                        </tr>
+                    </thead>
+                    
+                    <!-- Table body with player data -->
+                    <tbody>
+            `;
+            
+            // Loop through each player in the leaderboard
+            for (let i = 0; i < leaderboard.length; i++) {
+                
+                // Get the current player data
+                const player = leaderboard[i];
+                
+                // Check if this is the current user
+                const isCurrentUser = (player.user_id === currentUserId);
+                
+                // Determine the row class based on rank and current user
+                let rowClass = '';
+                
+                // Add special class for top 3 ranks
+                if (player.rank === 1) {
+                    rowClass += 'rank-gold ';
+                } else if (player.rank === 2) {
+                    rowClass += 'rank-silver ';
+                } else if (player.rank === 3) {
+                    rowClass += 'rank-bronze ';
+                }
+                
+                // Add highlight class if this is the current user
+                if (isCurrentUser) {
+                    rowClass += 'current-user ';
+                }
+                
+                // Determine the rank display (add medal for top 3)
+                let rankDisplay = player.rank;
+                
+                if (player.rank === 1) {
+                    rankDisplay = '1st';
+                } else if (player.rank === 2) {
+                    rankDisplay = '2nd';
+                } else if (player.rank === 3) {
+                    rankDisplay = '3rd';
+                }
+                
+                // Build the table row HTML
+                tableHTML += `
+                    <tr class="${rowClass.trim()}" id="player-row-${player.user_id}">
+                        
+                        <!-- Rank column -->
+                        <td class="rank-cell">
+                            <span class="rank-number">${rankDisplay}</span>
+                        </td>
+                        
+                        <!-- Username column -->
+                        <td class="username-cell">
+                            <span class="username-text">${escapeHTML(player.username)}</span>
+                            ${isCurrentUser ? '<span class="you-badge">(You)</span>' : ''}
+                        </td>
+                        
+                        <!-- Games Played column -->
+                        <td class="games-cell">
+                            ${player.games_played}
+                        </td>
+                        
+                        <!-- Games Won column -->
+                        <td class="wins-cell">
+                            ${player.games_won}
+                        </td>
+                        
+                        <!-- Win Rate column -->
+                        <td class="winrate-cell">
+                            <span class="winrate-value">${player.win_rate}%</span>
+                        </td>
+                        
+                    </tr>
+                `;
+                
+            }
+            
+            // Close the table body and table
+            tableHTML += `
+                    </tbody>
+                </table>
+            `;
+            
+            // Insert the table HTML into the container
+            tableContainer.innerHTML = tableHTML;
+            
+            // Scroll to current user's row if they are not in the visible area
+            scrollToCurrentUser();
+            
+        }
+        
+        // ==================================================================
+        // UPDATE YOUR RANK
+        // ==================================================================
+        
+        /**
+         * Updates the "Your Rank" card with the current user's ranking.
+         * 
+         * @param {Array} leaderboard - Array of player objects with ranking data
+         */
+        function updateYourRank(leaderboard) {
+            
+            // Get reference to the your rank text element
+            const yourRankText = document.getElementById('your-rank-text');
+            
+            // Get reference to the your rank card
+            const yourRankCard = document.getElementById('your-rank-card');
+            
+            // Find the current user in the leaderboard
+            let userRank = null;
+            let userData = null;
+            
+            for (let i = 0; i < leaderboard.length; i++) {
+                
+                if (leaderboard[i].user_id === currentUserId) {
+                    
+                    userRank = leaderboard[i].rank;
+                    userData = leaderboard[i];
+                    break;
+                    
+                }
+                
+            }
+            
+            // Check if user was found
+            if (userRank !== null) {
+                
+                // Calculate the ordinal suffix (st, nd, rd, th)
+                let suffix = 'th';
+                
+                if (userRank === 1) {
+                    suffix = 'st';
+                } else if (userRank === 2) {
+                    suffix = 'nd';
+                } else if (userRank === 3) {
+                    suffix = 'rd';
+                } else if (userRank > 20) {
+                    // Handle 21st, 22nd, 23rd, etc.
+                    const lastDigit = userRank % 10;
+                    if (lastDigit === 1) {
+                        suffix = 'st';
+                    } else if (lastDigit === 2) {
+                        suffix = 'nd';
+                    } else if (lastDigit === 3) {
+                        suffix = 'rd';
+                    }
+                }
+                
+                // Build the rank message
+                let rankMessage = `You are ranked ${userRank}${suffix} out of ${leaderboard.length} players!`;
+                
+                // Add additional info
+                rankMessage += ` (${userData.games_won} wins from ${userData.games_played} games - ${userData.win_rate}% win rate)`;
+                
+                // Update the text
+                yourRankText.textContent = rankMessage;
+                
+                // Add special styling for top 3
+                yourRankCard.classList.remove('rank-gold', 'rank-silver', 'rank-bronze');
+                
+                if (userRank === 1) {
+                    yourRankCard.classList.add('rank-gold');
+                } else if (userRank === 2) {
+                    yourRankCard.classList.add('rank-silver');
+                } else if (userRank === 3) {
+                    yourRankCard.classList.add('rank-bronze');
+                }
+                
+            } else {
+                
+                // User not found in leaderboard (should not happen)
+                yourRankText.textContent = 'Unable to find your ranking.';
+                
+            }
+            
+        }
+        
+        // ==================================================================
+        // SCROLL TO CURRENT USER
+        // ==================================================================
+        
+        /**
+         * Scrolls the table to show the current user's row if it's not visible.
+         * Only scrolls if there are many players.
+         */
+        function scrollToCurrentUser() {
+            
+            // Get the current user's row
+            const userRow = document.getElementById('player-row-' + currentUserId);
+            
+            // Check if the row exists
+            if (userRow) {
+                
+                // Use a small delay to ensure the table is rendered
+                setTimeout(function() {
+                    
+                    // Check if the row is out of view
+                    const rect = userRow.getBoundingClientRect();
+                    const isInView = (rect.top >= 0) && (rect.bottom <= window.innerHeight);
+                    
+                    // Only scroll if the row is not in view
+                    if (!isInView) {
+                        
+                        // Scroll the row into view with smooth animation
+                        userRow.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'center'
+                        });
+                        
+                    }
+                    
+                }, 300);
+                
+            }
+            
+        }
+        
+        // ==================================================================
+        // LOGOUT HANDLER
+        // ==================================================================
+        
+        /**
+         * Handles the logout button click.
+         * Sends logout request to server and redirects to login page.
+         */
+        async function handleLogout() {
+            
+            try {
+                
+                // Send a POST request to the logout API endpoint
+                const response = await fetch('/api/logout', {
+                    
+                    // Use POST method for logout
+                    method: 'POST',
+                    
+                    // Set headers
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                    
+                });
+                
+                // Parse the JSON response from the server
+                const data = await response.json();
+                
+                // Check if logout was successful
+                if (data.success) {
+                    
+                    // Redirect to the login page
+                    window.location.href = '/login';
+                    
+                } else {
+                    
+                    // Show error message if logout failed
+                    alert('Logout failed: ' + data.message);
+                    
+                }
+                
+            } catch (error) {
+                
+                // Log any network or parsing errors
+                console.error('Error during logout:', error);
+                
+                // Redirect to login page anyway
+                window.location.href = '/login';
+                
+            }
+            
+        }
+        
+        // ==================================================================
+        // HELPER FUNCTIONS
+        // ==================================================================
+        
+        /**
+         * Escapes HTML special characters to prevent XSS attacks.
+         * This is important when displaying user-generated content.
+         * 
+         * @param {string} text - The text to escape
+         * @returns {string} - The escaped text
+         */
+        function escapeHTML(text) {
+            
+            // Create a temporary div element
+            const div = document.createElement('div');
+            
+            // Set the text content (this automatically escapes HTML)
+            div.textContent = text;
+            
+            // Return the escaped HTML
+            return div.innerHTML;
+            
+        }
+        
+    </script>
+    
+</body>
+</html>

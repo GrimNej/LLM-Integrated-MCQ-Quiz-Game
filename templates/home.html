@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- ================================================================== -->
+    <!-- HEAD SECTION -->
+    <!-- Contains metadata, title, and links to stylesheets -->
+    <!-- ================================================================== -->
+    
+    <!-- Set the character encoding for the document to UTF-8 -->
+    <meta charset="UTF-8">
+    
+    <!-- Make the page responsive on mobile devices -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Title that appears in the browser tab -->
+    <title>MCQ Quiz Game - Home</title>
+    
+    <!-- Link to our external CSS stylesheet for styling -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- ================================================================== -->
+    <!-- HEADER NAVIGATION BAR -->
+    <!-- Present on all pages except Login, Quiz, and Results -->
+    <!-- ================================================================== -->
+    
+    <header class="navbar">
+        
+        <!-- Left side of navbar - Logo/App name -->
+        <div class="navbar-brand">
+            
+            <!-- Clickable logo that goes to home page -->
+            <a href="/home" class="navbar-logo">MCQ Quiz Game</a>
+            
+        </div>
+        
+        <!-- Right side of navbar - Navigation links -->
+        <nav class="navbar-menu">
+            
+            <!-- Play link - goes to game setup page -->
+            <a href="/play" class="navbar-link">Play</a>
+            
+            <!-- Leaderboard link - goes to leaderboard page -->
+            <a href="/leaderboard" class="navbar-link">Leaderboard</a>
+            
+            <!-- Account link - goes to account settings page -->
+            <a href="/account" class="navbar-link">Account</a>
+            
+            <!-- Logout button - logs out and redirects to login -->
+            <button class="navbar-logout" onclick="handleLogout()">Logout</button>
+            
+        </nav>
+        
+        <!-- Display current username -->
+        <div class="navbar-user">
+            
+            <!-- This will be filled by JavaScript with the username -->
+            <span id="navbar-username">Logged in as: </span>
+            
+        </div>
+        
+    </header>
+    
+    <!-- ================================================================== -->
+    <!-- MAIN CONTENT AREA -->
+    <!-- Contains welcome message, stats, history, and play button -->
+    <!-- ================================================================== -->
+    
+    <main class="main-content">
+        
+        <!-- ============================================================== -->
+        <!-- WELCOME SECTION -->
+        <!-- Displays personalized welcome message -->
+        <!-- ============================================================== -->
+        
+        <section class="welcome-section">
+            
+            <!-- Welcome heading - username will be inserted by JavaScript -->
+            <h1 class="welcome-title" id="welcome-title">Welcome back!</h1>
+            
+            <!-- Subtitle with encouragement -->
+            <p class="welcome-subtitle">Ready to test your knowledge today?</p>
+            
+        </section>
+        
+        <!-- ============================================================== -->
+        <!-- STATS SECTION -->
+        <!-- Displays user's game statistics in a card layout -->
+        <!-- ============================================================== -->
+        
+        <section class="stats-section">
+            
+            <!-- Section heading -->
+            <h2 class="section-title">Your Statistics</h2>
+            
+            <!-- Container for stat cards -->
+            <div class="stats-container">
+                
+                <!-- Games Played stat card -->
+                <div class="stat-card">
+                    
+                    <!-- Stat label -->
+                    <span class="stat-label">Games Played</span>
+                    
+                    <!-- Stat value - will be filled by JavaScript -->
+                    <span class="stat-value" id="stat-games-played">0</span>
+                    
+                </div>
+                
+                <!-- Games Won stat card -->
+                <div class="stat-card">
+                    
+                    <!-- Stat label -->
+                    <span class="stat-label">Games Won</span>
+                    
+                    <!-- Stat value - will be filled by JavaScript -->
+                    <span class="stat-value" id="stat-games-won">0</span>
+                    
+                </div>
+                
+                <!-- Win Rate stat card -->
+                <div class="stat-card">
+                    
+                    <!-- Stat label -->
+                    <span class="stat-label">Win Rate</span>
+                    
+                    <!-- Stat value - will be filled by JavaScript -->
+                    <span class="stat-value" id="stat-win-rate">0%</span>
+                    
+                </div>
+                
+            </div>
+            
+        </section>
+        
+        <!-- ============================================================== -->
+        <!-- PLAY NOW BUTTON -->
+        <!-- Large button to start a new game -->
+        <!-- ============================================================== -->
+        
+        <section class="play-section">
+            
+            <!-- Large play button that navigates to game setup -->
+            <a href="/play" class="play-button">Play Now</a>
+            
+        </section>
+        
+        <!-- ============================================================== -->
+        <!-- GAME HISTORY SECTION -->
+        <!-- Displays list of past games with delete option -->
+        <!-- ============================================================== -->
+        
+        <section class="history-section">
+            
+            <!-- Section heading -->
+            <h2 class="section-title">Game History</h2>
+            
+            <!-- Container for history entries - will be filled by JavaScript -->
+            <div class="history-container" id="history-container">
+                
+                <!-- Loading message shown while fetching data -->
+                <p class="loading-message">Loading game history...</p>
+                
+            </div>
+            
+        </section>
+        
+    </main>
+    
+    <!-- ================================================================== -->
+    <!-- JAVASCRIPT SECTION -->
+    <!-- Contains all the interactive functionality for this page -->
+    <!-- ================================================================== -->
+    
+    <script>
+        // ==================================================================
+        // PAGE INITIALIZATION
+        // ==================================================================
+        
+        /**
+         * Runs when the page finishes loading.
+         * Fetches user stats and game history from the server.
+         */
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // Fetch and display user statistics
+            loadUserStats();
+            
+            // Fetch and display game history
+            loadGameHistory();
+            
+        });
+        
+        // ==================================================================
+        // LOAD USER STATS
+        // ==================================================================
+        
+        /**
+         * Fetches the current user's statistics from the server.
+         * Updates the stats cards and welcome message with the data.
+         */
+        async function loadUserStats() {
+            
+            try {
+                
+                // Send a GET request to the user stats API endpoint
+                const response = await fetch('/api/user/stats', {
+                    
+                    // Use GET method for fetching data
+                    method: 'GET',
+                    
+                    // Set headers to accept JSON response
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                    
+                });
+                
+                // Parse the JSON response from the server
+                const data = await response.json();
+                
+                // Check if the request was successful
+                if (data.success) {
+                    
+                    // Update the welcome title with the username
+                    document.getElementById('welcome-title').textContent = 
+                        'Welcome back, ' + data.username + '!';
+                    
+                    // Update the navbar username display
+                    document.getElementById('navbar-username').textContent = 
+                        'Logged in as: ' + data.username;
+                    
+                    // Update the games played stat card
+                    document.getElementById('stat-games-played').textContent = 
+                        data.games_played;
+                    
+                    // Update the games won stat card
+                    document.getElementById('stat-games-won').textContent = 
+                        data.games_won;
+                    
+                    // Update the win rate stat card with percentage symbol
+                    document.getElementById('stat-win-rate').textContent = 
+                        data.win_rate + '%';
+                    
+                } else {
+                    
+                    // Log error message if request failed
+                    console.error('Failed to load user stats:', data.message);
+                    
+                    // If not logged in, redirect to login page
+                    if (response.status === 401) {
+                        window.location.href = '/login';
+                    }
+                    
+                }
+                
+            } catch (error) {
+                
+                // Log any network or parsing errors
+                console.error('Error loading user stats:', error);
+                
+            }
+            
+        }
+        
+        // ==================================================================
+        // LOAD GAME HISTORY
+        // ==================================================================
+        
+        /**
+         * Fetches the current user's game history from the server.
+         * Displays the history entries in the history container.
+         */
+        async function loadGameHistory() {
+            
+            // Get reference to the history container element
+            const historyContainer = document.getElementById('history-container');
+            
+            try {
+                
+                // Send a GET request to the history API endpoint
+                const response = await fetch('/api/history', {
+                    
+                    // Use GET method for fetching data
+                    method: 'GET',
+                    
+                    // Set headers to accept JSON response
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                    
+                });
+                
+                // Parse the JSON response from the server
+                const data = await response.json();
+                
+                // Check if the request was successful
+                if (data.success) {
+                    
+                    // Check if there are any history entries
+                    if (data.history.length === 0) {
+                        
+                        // Display message if no games have been played
+                        historyContainer.innerHTML = `
+                            <div class="no-history">
+                                <p>No games played yet!</p>
+                                <p>Click "Play Now" to start your first quiz.</p>
+                            </div>
+                        `;
+                        
+                    } else {
+                        
+                        // Build HTML for each history entry
+                        let historyHTML = '';
+                        
+                        // Loop through each history entry
+                        for (let i = 0; i < data.history.length; i++) {
+                            
+                            // Get the current history entry
+                            const entry = data.history[i];
+                            
+                            // Determine the CSS class based on result (won or lost)
+                            const resultClass = entry.result === 'WON' ? 'result-won' : 'result-lost';
+                            
+                            // Build the HTML for this entry
+                            historyHTML += `
+                                <div class="history-entry" id="history-entry-${entry.history_id}">
+                                    
+                                    <div class="history-info">
+                                        
+                                        <span class="history-topic">${escapeHTML(entry.topic)}</span>
+                                        
+                                        <span class="history-date">${entry.played_at}</span>
+                                        
+                                    </div>
+                                    
+                                    <div class="history-result">
+                                        
+                                        <span class="history-score">Score: ${entry.score}/10</span>
+                                        
+                                        <span class="history-status ${resultClass}">${entry.result}</span>
+                                        
+                                    </div>
+                                    
+                                    <button class="history-delete-btn" onclick="deleteHistoryEntry(${entry.history_id})">
+                                        Delete
+                                    </button>
+                                    
+                                </div>
+                            `;
+                            
+                        }
+                        
+                        // Insert the built HTML into the container
+                        historyContainer.innerHTML = historyHTML;
+                        
+                    }
+                    
+                } else {
+                    
+                    // Display error message if request failed
+                    historyContainer.innerHTML = `
+                        <div class="history-error">
+                            <p>Failed to load game history.</p>
+                            <p>${data.message}</p>
+                        </div>
+                    `;
+                    
+                }
+                
+            } catch (error) {
+                
+                // Log any network or parsing errors
+                console.error('Error loading game history:', error);
+                
+                // Display error message in the container
+                historyContainer.innerHTML = `
+                    <div class="history-error">
+                        <p>An error occurred while loading game history.</p>
+                        <p>Please try refreshing the page.</p>
+                    </div>
+                `;
+                
+            }
+            
+        }
+        
+        // ==================================================================
+        // DELETE HISTORY ENTRY
+        // ==================================================================
+        
+        /**
+         * Deletes a specific game history entry.
+         * The user's stats (games_played, games_won) remain unchanged.
+         * 
+         * @param {number} historyId - The ID of the history entry to delete
+         */
+        async function deleteHistoryEntry(historyId) {
+            
+            // Ask user to confirm deletion
+            const confirmDelete = confirm('Are you sure you want to delete this history entry? This action cannot be undone. Note: Your stats will not be affected.');
+            
+            // If user cancelled, stop here
+            if (!confirmDelete) {
+                return;
+            }
+            
+            try {
+                
+                // Send a DELETE request to the history API endpoint
+                const response = await fetch('/api/history/' + historyId, {
+                    
+                    // Use DELETE method for removing data
+                    method: 'DELETE',
+                    
+                    // Set headers
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                    
+                });
+                
+                // Parse the JSON response from the server
+                const data = await response.json();
+                
+                // Check if deletion was successful
+                if (data.success) {
+                    
+                    // Get the history entry element
+                    const entryElement = document.getElementById('history-entry-' + historyId);
+                    
+                    // If the element exists, remove it from the page
+                    if (entryElement) {
+                        
+                        // Add a fade-out animation class
+                        entryElement.classList.add('fade-out');
+                        
+                        // Remove the element after the animation completes
+                        setTimeout(function() {
+                            
+                            // Remove the element from the DOM
+                            entryElement.remove();
+                            
+                            // Check if there are any entries left
+                            const historyContainer = document.getElementById('history-container');
+                            
+                            // If no entries left, show the empty message
+                            if (historyContainer.children.length === 0) {
+                                
+                                historyContainer.innerHTML = `
+                                    <div class="no-history">
+                                        <p>No games played yet!</p>
+                                        <p>Click "Play Now" to start your first quiz.</p>
+                                    </div>
+                                `;
+                                
+                            }
+                            
+                        }, 300);
+                        
+                    }
+                    
+                } else {
+                    
+                    // Show error message if deletion failed
+                    alert('Failed to delete history entry: ' + data.message);
+                    
+                }
+                
+            } catch (error) {
+                
+                // Log any network or parsing errors
+                console.error('Error deleting history entry:', error);
+                
+                // Show error message to user
+                alert('An error occurred while deleting the history entry.');
+                
+            }
+            
+        }
+        
+        // ==================================================================
+        // LOGOUT HANDLER
+        // ==================================================================
+        
+        /**
+         * Handles the logout button click.
+         * Sends logout request to server and redirects to login page.
+         */
+        async function handleLogout() {
+            
+            try {
+                
+                // Send a POST request to the logout API endpoint
+                const response = await fetch('/api/logout', {
+                    
+                    // Use POST method for logout
+                    method: 'POST',
+                    
+                    // Set headers
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                    
+                });
+                
+                // Parse the JSON response from the server
+                const data = await response.json();
+                
+                // Check if logout was successful
+                if (data.success) {
+                    
+                    // Redirect to the login page
+                    window.location.href = '/login';
+                    
+                } else {
+                    
+                    // Show error message if logout failed
+                    alert('Logout failed: ' + data.message);
+                    
+                }
+                
+            } catch (error) {
+                
+                // Log any network or parsing errors
+                console.error('Error during logout:', error);
+                
+                // Redirect to login page anyway
+                window.location.href = '/login';
+                
+            }
+            
+        }
+        
+        // ==================================================================
+        // HELPER FUNCTIONS
+        // ==================================================================
+        
+        /**
+         * Escapes HTML special characters to prevent XSS attacks.
+         * This is important when displaying user-generated content.
+         * 
+         * @param {string} text - The text to escape
+         * @returns {string} - The escaped text
+         */
+        function escapeHTML(text) {
+            
+            // Create a temporary div element
+            const div = document.createElement('div');
+            
+            // Set the text content (this automatically escapes HTML)
+            div.textContent = text;
+            
+            // Return the escaped HTML
+            return div.innerHTML;
+            
+        }
+        
+    </script>
+    
+</body>
+</html>

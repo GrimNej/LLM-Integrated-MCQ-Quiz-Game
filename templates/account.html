@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- ================================================================== -->
+    <!-- HEAD SECTION -->
+    <!-- Contains metadata, title, and links to stylesheets -->
+    <!-- ================================================================== -->
+    
+    <!-- Set the character encoding for the document to UTF-8 -->
+    <meta charset="UTF-8">
+    
+    <!-- Make the page responsive on mobile devices -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Title that appears in the browser tab -->
+    <title>MCQ Quiz Game - Account Settings</title>
+    
+    <!-- Link to our external CSS stylesheet for styling -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- ================================================================== -->
+    <!-- HEADER NAVIGATION BAR -->
+    <!-- Present on all pages except Login, Quiz, and Results -->
+    <!-- ================================================================== -->
+    
+    <header class="navbar">
+        
+        <!-- Left side of navbar - Logo/App name -->
+        <div class="navbar-brand">
+            
+            <!-- Clickable logo that goes to home page -->
+            <a href="/home" class="navbar-logo">MCQ Quiz Game</a>
+            
+        </div>
+        
+        <!-- Right side of navbar - Navigation links -->
+        <nav class="navbar-menu">
+            
+            <!-- Play link - goes to game setup page -->
+            <a href="/play" class="navbar-link">Play</a>
+            
+            <!-- Leaderboard link - goes to leaderboard page -->
+            <a href="/leaderboard" class="navbar-link">Leaderboard</a>
+            
+            <!-- Account link - currently active page -->
+            <a href="/account" class="navbar-link active">Account</a>
+            
+            <!-- Logout button - logs out and redirects to login -->
+            <button class="navbar-logout" onclick="handleLogout()">Logout</button>
+            
+        </nav>
+        
+        <!-- Display current username -->
+        <div class="navbar-user">
+            
+            <!-- This will be filled by JavaScript with the username -->
+            <span id="navbar-username">Logged in as: </span>
+            
+        </div>
+        
+    </header>
+    
+    <!-- ================================================================== -->
+    <!-- MAIN CONTENT AREA -->
+    <!-- Contains account settings sections -->
+    <!-- ================================================================== -->
+    
+    <main class="main-content">
+        
+        <!-- ============================================================== -->
+        <!-- ACCOUNT SETTINGS SECTION -->
+        <!-- Contains all account management options -->
+        <!-- ============================================================== -->
+        
+        <section class="account-section">
+            
+            <!-- Page title -->
+            <h1 class="page-title">Account Settings</h1>
+            
+            <!-- Page subtitle -->
+            <p class="page-subtitle">Manage your account information and preferences</p>
+            
+            <!-- ========================================================== -->
+            <!-- ACCOUNT INFO CARD -->
+            <!-- Displays current account information -->
+            <!-- ========================================================== -->
+            
+            <div class="account-card">
+                
+                <!-- Card title -->
+                <h2 class="card-title">Account Information</h2>
+                
+                <!-- Account info display -->
+                <div class="account-info">
+                    
+                    <!-- Current username display -->
+                    <div class="info-row">
+                        
+                        <!-- Label -->
+                        <span class="info-label">Username:</span>
+                        
+                        <!-- Value - filled by JavaScript -->
+                        <span class="info-value" id="current-username">Loading...</span>
+                        
+                    </div>
+                    
+                    <!-- Account creation date display -->
+                    <div class="info-row">
+                        
+                        <!-- Label -->
+                        <span class="info-label">Member Since:</span>
+                        
+                        <!-- Value - filled by JavaScript -->
+                        <span class="info-value" id="member-since">Loading...</span>
+                        
+                    </div>
+                    
+                    <!-- Games played display -->
+                    <div class="info-row">
+                        
+                        <!-- Label -->
+                        <span class="info-label">Total Games:</span>
+                        
+                        <!-- Value - filled by JavaScript -->
+                        <span class="info-value" id="total-games">Loading...</span>
+                        
+                    </div>
+                    
+                    <!-- Win rate display -->
+                    <div class="info-row">
+                        
+                        <!-- Label -->
+                        <span class="info-label">Win Rate:</span>
+                        
+                        <!-- Value - filled by JavaScript -->
+                        <span class="info-value" id="win-rate">Loading...</span>
+                        
+                    </div>
+                    
+                </div>
+                
+            </div>
+            
+            <!-- ========================================================== -->
+            <!-- CHANGE USERNAME CARD -->
+            <!-- Form to update username -->
+            <!-- ========================================================== -->
+            
+            <div class="account-card">
+                
+                <!-- Card title -->
+                <h2 class="card-title">Change Username</h2>
+                
+                <!-- Card description -->
+                <p class="card-description">
+                    Choose a new username. It must be unique and at least 3 characters long.
+                </p>
+                
+                <!-- Change username form -->
+                <form class="account-form" id="username-form" onsubmit="handleChangeUsername(event)">
+                    
+                    <!-- New username input group -->
+                    <div class="input-group">
+                        
+                        <!-- Label for the new username field -->
+                        <label for="new-username">New Username</label>
+                        
+                        <!-- New username text input -->
+                        <input 
+                            type="text" 
+                            id="new-username" 
+                            name="new-username" 
+                            placeholder="Enter new username"
+                            required
+                            minlength="3"
+                            maxlength="50"
+                            autocomplete="username"
+                        >
+                        
+                    </div>
+                    
+                    <!-- Message box for this form -->
+                    <div class="message-box" id="username-message-box">
+                        <span id="username-message-text"></span>
+                    </div>
+                    
+                    <!-- Submit button -->
+                    <button type="submit" class="submit-button" id="username-button">
+                        Update Username
+                    </button>
+                    
+                </form>
+                
+            </div>
+            
+            <!-- ========================================================== -->
+            <!-- CHANGE PASSWORD CARD -->
+            <!-- Form to update password -->
+            <!-- ========================================================== -->
+            
+            <div class="account-card">
+                
+                <!-- Card title -->
+                <h2 class="card-title">Change Password</h2>
+                
+                <!-- Card description -->
+                <p class="card-description">
+                    Enter your current password and choose a new one. Minimum 4 characters.
+                </p>
+                
+                <!-- Change password form -->
+                <form class="account-form" id="password-form" onsubmit="handleChangePassword(event)">
+                    
+                    <!-- Current password input group -->
+                    <div class="input-group">
+                        
+                        <!-- Label for the current password field -->
+                        <label for="current-password">Current Password</label>
+                        
+                        <!-- Current password input -->
+                        <input 
+                            type="password" 
+                            id="current-password" 
+                            name="current-password" 
+                            placeholder="Enter current password"
+                            required
+                            autocomplete="current-password"
+                        >
+                        
+                    </div>
+                    
+                    <!-- New password input group -->
+                    <div class="input-group">
+                        
+                        <!-- Label for the new password field -->
+                        <label for="new-password">New Password</label>
+                        
+                        <!-- New password input -->
+                        <input 
+                            type="password" 
+                            id="new-password" 
+                            name="new-password" 
+                            placeholder="Enter new password"
+                            required
+                            minlength="4"
+                            autocomplete="new-password"
+                        >
+                        
+                    </div>
+                    
+                    <!-- Confirm new password input group -->
+                    <div class="input-group">
+                        
+                        <!-- Label for the confirm password field -->
+                        <label for="confirm-new-password">Confirm New Password</label>
+                        
+                        <!-- Confirm new password input -->
+                        <input 
+                            type="password" 
+                            id="confirm-new-password" 
+                            name="confirm-new-password" 
+                            placeholder="Confirm new password"
+                            required
+                            minlength="4"
+                            autocomplete="new-password"
+                        >
+                        
+                    </div>
+                    
+                    <!-- Message box for this form -->
+                    <div class="message-box" id="password-message-box">
+                        <span id="password-message-text"></span>
+                    </div>
+                    
+                    <!-- Submit button -->
+                    <button type="submit" class="submit-button" id="password-button">
+                        Update Password
+                    </button>
+                    
+                </form>
+                
+            </div>
+            
+            <!-- ========================================================== -->
+            <!-- DELETE ACCOUNT CARD -->
+            <!-- Option to permanently delete account -->
+            <!-- ========================================================== -->
+            
+            <div class="account-card danger-card">
+                
+                <!-- Card title with warning styling -->
+                <h2 class="card-title danger-title">Delete Account</h2>
+                
+                <!-- Card description with warning -->
+                <p class="card-description danger-text">
+                    Permanently delete your account and all associated data. This action cannot be undone.
+                </p>
+                
+                <!-- Warning list -->
+                <ul class="warning-list">
+                    
+                    <li class="warning-item">Your profile will be permanently removed</li>
+                    
+                    <li class="warning-item">All your game history will be deleted</li>
+                    
+                    <li class="warning-item">Your username will become available for others</li>
+                    
+                    <li class="warning-item">This action cannot be reversed</li>
+                    
+                </ul>
+                
+                <!-- Delete button -->
+                <button type="button" class="delete-button" id="delete-button" onclick="showDeleteModal()">
+                    Delete My Account
+                </button>
+                
+            </div>
+            
+        </section>
+        
+    </main>
+    
+    <!-- ================================================================== -->
+    <!-- DELETE CONFIRMATION MODAL -->
+    <!-- Shown when user clicks delete account button -->
+    <!-- ================================================================== -->
+    
+    <div class="modal-overlay hidden" id="delete-modal">
+        
+        <!-- Modal content box -->
+        <div class="modal-box danger-modal">
+            
+            <!-- Modal title -->
+            <h3 class="modal-title danger-title">Delete Your Account?</h3>
+            
+            <!-- Modal message -->
+            <p class="modal-message">
+                Are you sure? This will permanently delete your account and all your data. 
+                This action cannot be undone.
+            </p>
+            
+            <!-- Confirmation input -->
+            <div class="modal-input-group">
+                
+                <!-- Label -->
+                <label for="confirm-delete-input">
+                    Type your username to confirm:
+                </label>
+                
+                <!-- Input field -->
+                <input 
+                    type="text" 
+                    id="confirm-delete-input" 
+                    placeholder="Enter your username"
+                    autocomplete="off"
+                >
+                
+            </div>
+            
+            <!-- Modal error message -->
+            <div class="modal-error hidden" id="modal-error">
+                <span id="modal-error-text"></span>
+            </div>
+            
+            <!-- Modal buttons -->
+            <div class="modal-buttons">
+                
+                <!-- Cancel button - closes modal -->
+                <button class="modal-button cancel" onclick="closeDeleteModal()">
+                    Cancel
+                </button>
+                
+                <!-- Confirm button - deletes account -->
+                <button class="modal-button confirm danger" id="confirm-delete-button" onclick="handleDeleteAccount()">
+                    Yes, Delete My Account
+                </button>
+                
+            </div>
+            
+        </div>
+        
+    </div>
+    
+    <!-- ================================================================== -->
+    <!-- JAVASCRIPT SECTION -->
+    <!-- Contains all the interactive functionality for this page -->
+    <!-- ================================================================== -->
+    
+    <script>
+        // ==================================================================
+        // GLOBAL VARIABLES
+        // ==================================================================
+        
+        // Store the current username for delete confirmation
+        let currentUsername = '';
+        
+        // ==================================================================
+        // PAGE INITIALIZATION
+        // ==================================================================
+        
+        /**
+         * Runs when the page finishes loading.
+         * Fetches and displays account information.
+         */
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // Fetch and display account information
+            loadAccountInfo();
+            
+        });
+        
+        // ==================================================================
+        // LOAD ACCOUNT INFO
+        // ==================================================================
+        
+        /**
+         * Fetches the current user's account information from the server.
+         * Updates all info displays on the page.
+         */
+        async function loadAccountInfo() {
+            
+            try {
+                
+                // Fetch user stats for games and win rate
+                const statsResponse = await fetch('/api/user/stats', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                // Parse the stats response
+                const statsData = await statsResponse.json();
+                
+                // Fetch user info for username and creation date
+                const infoResponse = await fetch('/api/user/info', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                // Parse the info response
+                const infoData = await infoResponse.json();
+                
+                // Check if both requests were successful
+                if (statsData.success && infoData.success) {
+                    
+                    // Store the current username for delete confirmation
+                    currentUsername = statsData.username;
+                    
+                    // Update the navbar username display
+                    document.getElementById('navbar-username').textContent = 
+                        'Logged in as: ' + statsData.username;
+                    
+                    // Update the current username display
+                    document.getElementById('current-username').textContent = 
+                        statsData.username;
+                    
+                    // Update the member since display
+                    document.getElementById('member-since').textContent = 
+                        infoData.user.created_at;
+                    
+                    // Update the total games display
+                    document.getElementById('total-games').textContent = 
+                        statsData.games_played + ' (' + statsData.games_won + ' won)';
+                    
+                    // Update the win rate display
+                    document.getElementById('win-rate').textContent = 
+                        statsData.win_rate + '%';
+                    
+                } else {
+                    
+                    // If not logged in, redirect to login page
+                    if (statsResponse.status === 401 || infoResponse.status === 401) {
+                        window.location.href = '/login';
+                    }
+                    
+                }
+                
+            } catch (error) {
+                
+                // Log any network or parsing errors
+                console.error('Error loading account info:', error);
+                
+            }
+            
+        }
+        
+        // ==================================================================
+        // MESSAGE DISPLAY FUNCTIONS
+        // ==================================================================
+        
+        /**
+         * Displays a message in a specific message box.
+         * 
+         * @param {string} boxId - The ID of the message box element
+         * @param {string} textId - The ID of the message text element
+         * @param {string} message - The message text to display
+         * @param {string} type - Either 'success' or 'error'
+         */
+        function showMessage(boxId, textId, message, type) {
+            
+            // Get reference to the message box container
+            const messageBox = document.getElementById(boxId);
+            
+            // Get reference to the message text span
+            const messageText = document.getElementById(textId);
+            
+            // Set the message text content
+            messageText.textContent = message;
+            
+            // Remove any existing type classes
+            messageBox.classList.remove('success', 'error');
+            
+            // Add the appropriate type class for styling
+            messageBox.classList.add(type);
+            
+            // Add the 'show' class to make the message visible
+            messageBox.classList.add('show');
+            
+        }
+        
+        /**
+         * Hides a specific message box.
+         * 
+         * @param {string} boxId - The ID of the message box element
+         */
+        function hideMessage(boxId) {
+            
+            // Get reference to the message box container
+            const messageBox = document.getElementById(boxId);
+            
+            // Remove the 'show' class to hide the message
+            messageBox.classList.remove('show');
+            
+        }
+        
+        // ==================================================================
+        // BUTTON STATE FUNCTIONS
+        // ==================================================================
+        
+        /**
+         * Disables a button and shows loading state.
+         * 
+         * @param {HTMLElement} button - The button element to disable
+         * @param {string} loadingText - Text to show while loading
+         */
+        function setButtonLoading(button, loadingText) {
+            
+            // Disable the button
+            button.disabled = true;
+            
+            // Store the original text
+            button.dataset.originalText = button.textContent;
+            
+            // Change the button text
+            button.textContent = loadingText;
+            
+            // Add loading class
+            button.classList.add('loading');
+            
+        }
+        
+        /**
+         * Re-enables a button and restores its original text.
+         * 
+         * @param {HTMLElement} button - The button element to enable
+         */
+        function resetButton(button) {
+            
+            // Re-enable the button
+            button.disabled = false;
+            
+            // Restore the original text
+            button.textContent = button.dataset.originalText;
+            
+            // Remove loading class
+            button.classList.remove('loading');
+            
+        }
+        
+        // ==================================================================
+        // CHANGE USERNAME HANDLER
+        // ==================================================================
+        
+        /**
+         * Handles the change username form submission.
+         * Validates input and sends update request to server.
+         * 
+         * @param {Event} event - The form submit event
+         */
+        async function handleChangeUsername(event) {
+            
+            // Prevent default form submission
+            event.preventDefault();
+            
+            // Hide any existing messages
+            hideMessage('username-message-box');
+            
+            // Get the new username value
+            const newUsername = document.getElementById('new-username').value.trim();
+            
+            // Get reference to the submit button
+            const submitButton = document.getElementById('username-button');
+            
+            // Validate new username is not empty
+            if (!newUsername) {
+                showMessage('username-message-box', 'username-message-text', 
+                    'Please enter a new username', 'error');
+                return;
+            }
+            
+            // Validate minimum length
+            if (newUsername.length < 3) {
+                showMessage('username-message-box', 'username-message-text', 
+                    'Username must be at least 3 characters', 'error');
+                return;
+            }
+            
+            // Check if new username is same as current
+            if (newUsername === currentUsername) {
+                showMessage('username-message-box', 'username-message-text', 
+                    'New username is the same as current username', 'error');
+                return;
+            }
+            
+            // Set button to loading state
+            setButtonLoading(submitButton, 'Updating...');
+            
+            try {
+                
+                // Send PUT request to update username
+                const response = await fetch('/api/user/username', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        new_username: newUsername
+                    })
+                });
+                
+                // Parse the response
+                const data = await response.json();
+                
+                // Check if update was successful
+                if (data.success) {
+                    
+                    // Show success message
+                    showMessage('username-message-box', 'username-message-text', 
+                        'Username updated successfully!', 'success');
+                    
+                    // Update the current username variable
+                    currentUsername = newUsername;
+                    
+                    // Update displays
+                    document.getElementById('current-username').textContent = newUsername;
+                    document.getElementById('navbar-username').textContent = 
+                        'Logged in as: ' + newUsername;
+                    
+                    // Clear the input field
+                    document.getElementById('new-username').value = '';
+                    
+                } else {
+                    
+                    // Show error message
+                    showMessage('username-message-box', 'username-message-text', 
+                        data.message, 'error');
+                    
+                }
+                
+                // Reset button
+                resetButton(submitButton);
+                
+            } catch (error) {
+                
+                // Log error
+                console.error('Error updating username:', error);
+                
+                // Show error message
+                showMessage('username-message-box', 'username-message-text', 
+                    'An error occurred. Please try again.', 'error');
+                
+                // Reset button
+                resetButton(submitButton);
+                
+            }
+            
+        }
+        
+        // ==================================================================
+        // CHANGE PASSWORD HANDLER
+        // ==================================================================
+        
+        /**
+         * Handles the change password form submission.
+         * Validates input and sends update request to server.
+         * 
+         * @param {Event} event - The form submit event
+         */
+        async function handleChangePassword(event) {
+            
+            // Prevent default form submission
+            event.preventDefault();
+            
+            // Hide any existing messages
+            hideMessage('password-message-box');
+            
+            // Get form values
+            const currentPassword = document.getElementById('current-password').value.trim();
+            const newPassword = document.getElementById('new-password').value.trim();
+            const confirmNewPassword = document.getElementById('confirm-new-password').value.trim();
+            
+            // Get reference to the submit button
+            const submitButton = document.getElementById('password-button');
+            
+            // Validate current password is not empty
+            if (!currentPassword) {
+                showMessage('password-message-box', 'password-message-text', 
+                    'Please enter your current password', 'error');
+                return;
+            }
+            
+            // Validate new password is not empty
+            if (!newPassword) {
+                showMessage('password-message-box', 'password-message-text', 
+                    'Please enter a new password', 'error');
+                return;
+            }
+            
+            // Validate new password minimum length
+            if (newPassword.length < 4) {
+                showMessage('password-message-box', 'password-message-text', 
+                    'New password must be at least 4 characters', 'error');
+                return;
+            }
+            
+            // Validate confirm password is not empty
+            if (!confirmNewPassword) {
+                showMessage('password-message-box', 'password-message-text', 
+                    'Please confirm your new password', 'error');
+                return;
+            }
+            
+            // Validate passwords match
+            if (newPassword !== confirmNewPassword) {
+                showMessage('password-message-box', 'password-message-text', 
+                    'New passwords do not match', 'error');
+                return;
+            }
+            
+            // Check if new password is same as current
+            if (newPassword === currentPassword) {
+                showMessage('password-message-box', 'password-message-text', 
+                    'New password must be different from current password', 'error');
+                return;
+            }
+            
+            // Set button to loading state
+            setButtonLoading(submitButton, 'Updating...');
+            
+            try {
+                
+                // Send PUT request to update password
+                const response = await fetch('/api/user/password', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        current_password: currentPassword,
+                        new_password: newPassword
+                    })
+                });
+                
+                // Parse the response
+                const data = await response.json();
+                
+                // Check if update was successful
+                if (data.success) {
+                    
+                    // Show success message
+                    showMessage('password-message-box', 'password-message-text', 
+                        'Password updated successfully!', 'success');
+                    
+                    // Clear the input fields
+                    document.getElementById('current-password').value = '';
+                    document.getElementById('new-password').value = '';
+                    document.getElementById('confirm-new-password').value = '';
+                    
+                } else {
+                    
+                    // Show error message
+                    showMessage('password-message-box', 'password-message-text', 
+                        data.message, 'error');
+                    
+                }
+                
+                // Reset button
+                resetButton(submitButton);
+                
+            } catch (error) {
+                
+                // Log error
+                console.error('Error updating password:', error);
+                
+                // Show error message
+                showMessage('password-message-box', 'password-message-text', 
+                    'An error occurred. Please try again.', 'error');
+                
+                // Reset button
+                resetButton(submitButton);
+                
+            }
+            
+        }
+        
+        // ==================================================================
+        // DELETE ACCOUNT FUNCTIONS
+        // ==================================================================
+        
+        /**
+         * Shows the delete account confirmation modal.
+         */
+        function showDeleteModal() {
+            
+            // Get the delete modal element
+            const deleteModal = document.getElementById('delete-modal');
+            
+            // Remove the hidden class to show the modal
+            deleteModal.classList.remove('hidden');
+            
+            // Clear the confirmation input
+            document.getElementById('confirm-delete-input').value = '';
+            
+            // Hide any error messages
+            document.getElementById('modal-error').classList.add('hidden');
+            
+            // Focus on the confirmation input
+            document.getElementById('confirm-delete-input').focus();
+            
+        }
+        
+        /**
+         * Closes the delete account confirmation modal.
+         */
+        function closeDeleteModal() {
+            
+            // Get the delete modal element
+            const deleteModal = document.getElementById('delete-modal');
+            
+            // Add the hidden class to hide the modal
+            deleteModal.classList.add('hidden');
+            
+        }
+        
+        /**
+         * Handles the account deletion after confirmation.
+         * Verifies username input and sends delete request to server.
+         */
+        async function handleDeleteAccount() {
+            
+            // Get the confirmation input value
+            const confirmInput = document.getElementById('confirm-delete-input').value.trim();
+            
+            // Get reference to the confirm button
+            const confirmButton = document.getElementById('confirm-delete-button');
+            
+            // Get reference to the modal error elements
+            const modalError = document.getElementById('modal-error');
+            const modalErrorText = document.getElementById('modal-error-text');
+            
+            // Validate that username was entered
+            if (!confirmInput) {
+                
+                // Show error
+                modalErrorText.textContent = 'Please type your username to confirm';
+                modalError.classList.remove('hidden');
+                return;
+                
+            }
+            
+            // Validate that username matches
+            if (confirmInput !== currentUsername) {
+                
+                // Show error
+                modalErrorText.textContent = 'Username does not match. Please type your exact username.';
+                modalError.classList.remove('hidden');
+                return;
+                
+            }
+            
+            // Hide any error messages
+            modalError.classList.add('hidden');
+            
+            // Set button to loading state
+            setButtonLoading(confirmButton, 'Deleting...');
+            
+            try {
+                
+                // Send DELETE request to delete account
+                const response = await fetch('/api/user/delete', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                // Parse the response
+                const data = await response.json();
+                
+                // Check if deletion was successful
+                if (data.success) {
+                    
+                    // Show success message
+                    alert('Your account has been deleted. You will now be redirected to the login page.');
+                    
+                    // Redirect to login page
+                    window.location.href = '/login';
+                    
+                } else {
+                    
+                    // Show error
+                    modalErrorText.textContent = data.message;
+                    modalError.classList.remove('hidden');
+                    
+                    // Reset button
+                    resetButton(confirmButton);
+                    
+                }
+                
+            } catch (error) {
+                
+                // Log error
+                console.error('Error deleting account:', error);
+                
+                // Show error
+                modalErrorText.textContent = 'An error occurred. Please try again.';
+                modalError.classList.remove('hidden');
+                
+                // Reset button
+                resetButton(confirmButton);
+                
+            }
+            
+        }
+        
+        // ==================================================================
+        // LOGOUT HANDLER
+        // ==================================================================
+        
+        /**
+         * Handles the logout button click.
+         * Sends logout request to server and redirects to login page.
+         */
+        async function handleLogout() {
+            
+            try {
+                
+                // Send POST request to logout
+                const response = await fetch('/api/logout', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                // Parse the response
+                const data = await response.json();
+                
+                // Check if logout was successful
+                if (data.success) {
+                    
+                    // Redirect to login page
+                    window.location.href = '/login';
+                    
+                } else {
+                    
+                    // Show error
+                    alert('Logout failed: ' + data.message);
+                    
+                }
+                
+            } catch (error) {
+                
+                // Log error
+                console.error('Error during logout:', error);
+                
+                // Redirect anyway
+                window.location.href = '/login';
+                
+            }
+            
+        }
+        
+        // ==================================================================
+        // KEYBOARD EVENT HANDLERS
+        // ==================================================================
+        
+        /**
+         * Handles keyboard events for the delete modal.
+         * Escape key closes the modal, Enter key confirms deletion.
+         */
+        document.addEventListener('keydown', function(event) {
+            
+            // Get the delete modal
+            const deleteModal = document.getElementById('delete-modal');
+            
+            // Check if modal is visible
+            if (!deleteModal.classList.contains('hidden')) {
+                
+                // Escape key closes modal
+                if (event.key === 'Escape') {
+                    closeDeleteModal();
+                }
+                
+                // Enter key triggers delete if input is focused
+                if (event.key === 'Enter') {
+                    const activeElement = document.activeElement;
+                    if (activeElement.id === 'confirm-delete-input') {
+                        handleDeleteAccount();
+                    }
+                }
+                
+            }
+            
+        });
+        
+    </script>
+    
+</body>
+</html>

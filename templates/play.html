@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- ================================================================== -->
+    <!-- HEAD SECTION -->
+    <!-- Contains metadata, title, and links to stylesheets -->
+    <!-- ================================================================== -->
+    
+    <!-- Set the character encoding for the document to UTF-8 -->
+    <meta charset="UTF-8">
+    
+    <!-- Make the page responsive on mobile devices -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Title that appears in the browser tab -->
+    <title>MCQ Quiz Game - Start New Game</title>
+    
+    <!-- Link to our external CSS stylesheet for styling -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- ================================================================== -->
+    <!-- HEADER NAVIGATION BAR -->
+    <!-- Present on all pages except Login, Quiz, and Results -->
+    <!-- ================================================================== -->
+    
+    <header class="navbar">
+        
+        <!-- Left side of navbar - Logo/App name -->
+        <div class="navbar-brand">
+            
+            <!-- Clickable logo that goes to home page -->
+            <a href="/home" class="navbar-logo">MCQ Quiz Game</a>
+            
+        </div>
+        
+        <!-- Right side of navbar - Navigation links -->
+        <nav class="navbar-menu">
+            
+            <!-- Play link - currently active page -->
+            <a href="/play" class="navbar-link active">Play</a>
+            
+            <!-- Leaderboard link - goes to leaderboard page -->
+            <a href="/leaderboard" class="navbar-link">Leaderboard</a>
+            
+            <!-- Account link - goes to account settings page -->
+            <a href="/account" class="navbar-link">Account</a>
+            
+            <!-- Logout button - logs out and redirects to login -->
+            <button class="navbar-logout" onclick="handleLogout()">Logout</button>
+            
+        </nav>
+        
+        <!-- Display current username -->
+        <div class="navbar-user">
+            
+            <!-- This will be filled by JavaScript with the username -->
+            <span id="navbar-username">Logged in as: </span>
+            
+        </div>
+        
+    </header>
+    
+    <!-- ================================================================== -->
+    <!-- MAIN CONTENT AREA -->
+    <!-- Contains the game setup form -->
+    <!-- ================================================================== -->
+    
+    <main class="main-content">
+        
+        <!-- ============================================================== -->
+        <!-- PLAY SETUP SECTION -->
+        <!-- Contains the form to enter a topic and start the quiz -->
+        <!-- ============================================================== -->
+        
+        <section class="play-setup-section">
+            
+            <!-- Page title -->
+            <h1 class="page-title">Start New Game</h1>
+            
+            <!-- Subtitle with instructions -->
+            <p class="page-subtitle">Enter a topic and test your knowledge with 10 AI-generated questions!</p>
+            
+            <!-- ========================================================== -->
+            <!-- GAME SETUP FORM -->
+            <!-- Contains topic input and start button -->
+            <!-- ========================================================== -->
+            
+            <div class="play-setup-card">
+                
+                <!-- Form for entering the quiz topic -->
+                <form class="play-form" id="play-form" onsubmit="handleStartQuiz(event)">
+                    
+                    <!-- Topic input group -->
+                    <div class="input-group">
+                        
+                        <!-- Label for the topic field -->
+                        <label for="topic-input">Quiz Topic</label>
+                        
+                        <!-- Topic text input -->
+                        <!-- placeholder gives an example to guide the user -->
+                        <input 
+                            type="text" 
+                            id="topic-input" 
+                            name="topic" 
+                            placeholder="e.g., Python Programming, World History, Space Exploration"
+                            required
+                            maxlength="100"
+                            autocomplete="off"
+                        >
+                        
+                        <!-- Helper text below the input -->
+                        <span class="input-helper">
+                            Enter any topic you want to be quizzed on. The AI will generate questions for you.
+                        </span>
+                        
+                    </div>
+                    
+                    <!-- ================================================== -->
+                    <!-- DIFFICULTY INFO BOX -->
+                    <!-- Explains the question difficulty distribution -->
+                    <!-- ================================================== -->
+                    
+                    <div class="difficulty-info-box">
+                        
+                        <!-- Box title -->
+                        <h3 class="difficulty-info-title">Question Difficulty</h3>
+                        
+                        <!-- Difficulty breakdown list -->
+                        <ul class="difficulty-list">
+                            
+                            <!-- Easy questions info -->
+                            <li class="difficulty-item">
+                                <span class="difficulty-badge easy">EASY</span>
+                                <span class="difficulty-text">Questions 1-5: Basic knowledge questions</span>
+                            </li>
+                            
+                            <!-- Medium questions info -->
+                            <li class="difficulty-item">
+                                <span class="difficulty-badge medium">MEDIUM</span>
+                                <span class="difficulty-text">Questions 6-8: Intermediate difficulty</span>
+                            </li>
+                            
+                            <!-- Hard questions info -->
+                            <li class="difficulty-item">
+                                <span class="difficulty-badge hard">HARD</span>
+                                <span class="difficulty-text">Questions 9-10: Expert-level challenges</span>
+                            </li>
+                            
+                        </ul>
+                        
+                        <!-- Win condition info -->
+                        <p class="win-condition">
+                            Score 7 or more correct answers to win!
+                        </p>
+                        
+                    </div>
+                    
+                    <!-- ================================================== -->
+                    <!-- MESSAGE DISPLAY AREA -->
+                    <!-- Shows success or error messages to the user -->
+                    <!-- ================================================== -->
+                    
+                    <div class="message-box" id="message-box">
+                        <span id="message-text"></span>
+                    </div>
+                    
+                    <!-- Start Quiz submit button -->
+                    <button type="submit" class="start-quiz-button" id="start-button">
+                        Start Quiz
+                    </button>
+                    
+                </form>
+                
+                <!-- ====================================================== -->
+                <!-- LOADING OVERLAY -->
+                <!-- Shown while questions are being generated -->
+                <!-- ====================================================== -->
+                
+                <div class="loading-overlay hidden" id="loading-overlay">
+                    
+                    <!-- Loading spinner animation -->
+                    <div class="loading-spinner"></div>
+                    
+                    <!-- Loading message -->
+                    <p class="loading-text" id="loading-text">Generating your quiz...</p>
+                    
+                    <!-- Sub-message with more details -->
+                    <p class="loading-subtext">
+                        This may take a few seconds as the AI creates questions for you.
+                    </p>
+                    
+                </div>
+                
+            </div>
+            
+            <!-- ========================================================== -->
+            <!-- BACK TO HOME LINK -->
+            <!-- Allows users to go back without starting a game -->
+            <!-- ========================================================== -->
+            
+            <a href="/home" class="back-link">Back to Home</a>
+            
+        </section>
+        
+    </main>
+    
+    <!-- ================================================================== -->
+    <!-- JAVASCRIPT SECTION -->
+    <!-- Contains all the interactive functionality for this page -->
+    <!-- ================================================================== -->
+    
+    <script>
+        // ==================================================================
+        // PAGE INITIALIZATION
+        // ==================================================================
+        
+        /**
+         * Runs when the page finishes loading.
+         * Fetches user info to display username in navbar.
+         */
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // Fetch and display username in navbar
+            loadUserInfo();
+            
+            // Focus on the topic input field for better UX
+            document.getElementById('topic-input').focus();
+            
+        });
+        
+        // ==================================================================
+        // LOAD USER INFO
+        // ==================================================================
+        
+        /**
+         * Fetches the current user's information from the server.
+         * Updates the navbar with the username.
+         */
+        async function loadUserInfo() {
+            
+            try {
+                
+                // Send a GET request to the user stats API endpoint
+                const response = await fetch('/api/user/stats', {
+                    
+                    // Use GET method for fetching data
+                    method: 'GET',
+                    
+                    // Set headers to accept JSON response
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                    
+                });
+                
+                // Parse the JSON response from the server
+                const data = await response.json();
+                
+                // Check if the request was successful
+                if (data.success) {
+                    
+                    // Update the navbar username display
+                    document.getElementById('navbar-username').textContent = 
+                        'Logged in as: ' + data.username;
+                    
+                } else {
+                    
+                    // If not logged in, redirect to login page
+                    if (response.status === 401) {
+                        window.location.href = '/login';
+                    }
+                    
+                }
+                
+            } catch (error) {
+                
+                // Log any network or parsing errors
+                console.error('Error loading user info:', error);
+                
+            }
+            
+        }
+        
+        // ==================================================================
+        // MESSAGE DISPLAY FUNCTIONS
+        // ==================================================================
+        
+        /**
+         * Displays a message to the user (success or error).
+         * 
+         * @param {string} message - The message text to display
+         * @param {string} type - Either 'success' or 'error'
+         */
+        function showMessage(message, type) {
+            
+            // Get reference to the message box container
+            const messageBox = document.getElementById('message-box');
+            
+            // Get reference to the message text span
+            const messageText = document.getElementById('message-text');
+            
+            // Set the message text content
+            messageText.textContent = message;
+            
+            // Remove any existing type classes (success or error)
+            messageBox.classList.remove('success', 'error');
+            
+            // Add the appropriate type class for styling
+            messageBox.classList.add(type);
+            
+            // Add the 'show' class to make the message visible
+            messageBox.classList.add('show');
+            
+        }
+        
+        /**
+         * Hides the message box.
+         */
+        function hideMessage() {
+            
+            // Get reference to the message box container
+            const messageBox = document.getElementById('message-box');
+            
+            // Remove the 'show' class to hide the message
+            messageBox.classList.remove('show');
+            
+        }
+        
+        // ==================================================================
+        // LOADING OVERLAY FUNCTIONS
+        // ==================================================================
+        
+        /**
+         * Shows the loading overlay while questions are being generated.
+         */
+        function showLoading() {
+            
+            // Get reference to the loading overlay
+            const loadingOverlay = document.getElementById('loading-overlay');
+            
+            // Remove the hidden class to show the overlay
+            loadingOverlay.classList.remove('hidden');
+            
+        }
+        
+        /**
+         * Hides the loading overlay.
+         */
+        function hideLoading() {
+            
+            // Get reference to the loading overlay
+            const loadingOverlay = document.getElementById('loading-overlay');
+            
+            // Add the hidden class to hide the overlay
+            loadingOverlay.classList.add('hidden');
+            
+        }
+        
+        /**
+         * Updates the loading text message.
+         * 
+         * @param {string} message - The new loading message to display
+         */
+        function updateLoadingText(message) {
+            
+            // Get reference to the loading text element
+            const loadingText = document.getElementById('loading-text');
+            
+            // Update the text content
+            loadingText.textContent = message;
+            
+        }
+        
+        // ==================================================================
+        // START QUIZ HANDLER
+        // ==================================================================
+        
+        /**
+         * Handles the quiz start form submission.
+         * Sends the topic to the server and waits for questions to be generated.
+         * 
+         * @param {Event} event - The form submit event
+         */
+        async function handleStartQuiz(event) {
+            
+            // Prevent the default form submission behavior
+            event.preventDefault();
+            
+            // Hide any existing messages
+            hideMessage();
+            
+            // Get the topic input value and remove extra whitespace
+            const topic = document.getElementById('topic-input').value.trim();
+            
+            // Get reference to the start button
+            const startButton = document.getElementById('start-button');
+            
+            // Validate that topic is not empty
+            if (!topic) {
+                
+                // Show error message if topic is empty
+                showMessage('Please enter a topic for the quiz', 'error');
+                
+                // Focus on the topic input
+                document.getElementById('topic-input').focus();
+                
+                // Stop the function here
+                return;
+                
+            }
+            
+            // Validate topic length (at least 2 characters)
+            if (topic.length < 2) {
+                
+                // Show error message if topic is too short
+                showMessage('Topic must be at least 2 characters long', 'error');
+                
+                // Focus on the topic input
+                document.getElementById('topic-input').focus();
+                
+                // Stop the function here
+                return;
+                
+            }
+            
+            // Disable the start button to prevent multiple clicks
+            startButton.disabled = true;
+            
+            // Show the loading overlay
+            showLoading();
+            
+            // Update loading message to show progress
+            updateLoadingText('Generating your quiz about "' + topic + '"...');
+            
+            try {
+                
+                // Send a POST request to the game generate API endpoint
+                const response = await fetch('/api/game/generate', {
+                    
+                    // Use POST method for sending data
+                    method: 'POST',
+                    
+                    // Set the content type to JSON
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    
+                    // Convert the topic to a JSON string
+                    body: JSON.stringify({
+                        topic: topic
+                    })
+                    
+                });
+                
+                // Parse the JSON response from the server
+                const data = await response.json();
+                
+                // Check if generation was successful
+                if (data.success) {
+                    
+                    // Update loading text
+                    updateLoadingText('Quiz ready! Starting...');
+                    
+                    // Store the questions in sessionStorage for the quiz page
+                    // sessionStorage keeps data only for the current browser tab
+                    sessionStorage.setItem('quizQuestions', JSON.stringify(data.questions));
+                    
+                    // Store the topic in sessionStorage
+                    sessionStorage.setItem('quizTopic', topic);
+                    
+                    // Redirect to the quiz page after a short delay
+                    setTimeout(function() {
+                        window.location.href = '/quiz';
+                    }, 500);
+                    
+                } else {
+                    
+                    // Hide the loading overlay
+                    hideLoading();
+                    
+                    // Show the error message from the server
+                    showMessage(data.message || 'Failed to generate quiz. Please try again.', 'error');
+                    
+                    // Re-enable the start button
+                    startButton.disabled = false;
+                    
+                }
+                
+            } catch (error) {
+                
+                // Log the error to the console for debugging
+                console.error('Error generating quiz:', error);
+                
+                // Hide the loading overlay
+                hideLoading();
+                
+                // Show a generic error message to the user
+                showMessage('An error occurred. Please try again.', 'error');
+                
+                // Re-enable the start button
+                startButton.disabled = false;
+                
+            }
+            
+        }
+        
+        // ==================================================================
+        // LOGOUT HANDLER
+        // ==================================================================
+        
+        /**
+         * Handles the logout button click.
+         * Sends logout request to server and redirects to login page.
+         */
+        async function handleLogout() {
+            
+            try {
+                
+                // Send a POST request to the logout API endpoint
+                const response = await fetch('/api/logout', {
+                    
+                    // Use POST method for logout
+                    method: 'POST',
+                    
+                    // Set headers
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                    
+                });
+                
+                // Parse the JSON response from the server
+                const data = await response.json();
+                
+                // Check if logout was successful
+                if (data.success) {
+                    
+                    // Clear any stored quiz data
+                    sessionStorage.removeItem('quizQuestions');
+                    sessionStorage.removeItem('quizTopic');
+                    
+                    // Redirect to the login page
+                    window.location.href = '/login';
+                    
+                } else {
+                    
+                    // Show error message if logout failed
+                    alert('Logout failed: ' + data.message);
+                    
+                }
+                
+            } catch (error) {
+                
+                // Log any network or parsing errors
+                console.error('Error during logout:', error);
+                
+                // Redirect to login page anyway
+                window.location.href = '/login';
+                
+            }
+            
+        }
+        
+        // ==================================================================
+        // ENTER KEY HANDLER
+        // ==================================================================
+        
+        // Listen for Enter key press on the topic input
+        document.getElementById('topic-input').addEventListener('keypress', function(event) {
+            
+            // Check if the pressed key is Enter
+            if (event.key === 'Enter') {
+                
+                // Submit the form
+                document.getElementById('play-form').dispatchEvent(new Event('submit'));
+                
+            }
+            
+        });
+        
+    </script>
+    
+</body>
+</html>

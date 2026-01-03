@@ -1,0 +1,2762 @@
+/* ============================================================================ */
+/* style.css */
+/* Main stylesheet for the MCQ Quiz Game */
+/* Implements dark theme with accent colors */
+/* ============================================================================ */
+
+/* ============================================================================ */
+/* CSS VARIABLES (Custom Properties) */
+/* Define reusable color values and other design tokens */
+/* ============================================================================ */
+
+:root {
+    
+    /* ======================================================================== */
+    /* COLOR PALETTE */
+    /* ======================================================================== */
+    
+    /* Primary background - very dark gray/black */
+    --bg-primary: #121212;
+    
+    /* Secondary background - slightly lighter for cards and containers */
+    --bg-secondary: #1E1E1E;
+    
+    /* Tertiary background - for hover states and borders */
+    --bg-tertiary: #2D2D2D;
+    
+    /* Primary text - white for main content */
+    --text-primary: #FFFFFF;
+    
+    /* Secondary text - light gray for less important text */
+    --text-secondary: #B0B0B0;
+    
+    /* Tertiary text - darker gray for hints and placeholders */
+    --text-tertiary: #808080;
+    
+    /* Accent color - green for success, wins, and primary buttons */
+    --accent-primary: #4CAF50;
+    
+    /* Accent hover - lighter green for hover states */
+    --accent-primary-hover: #66BB6A;
+    
+    /* Error color - red for errors, losses, and delete actions */
+    --error-color: #F44336;
+    
+    /* Error hover - lighter red for hover states */
+    --error-hover: #EF5350;
+    
+    /* Warning color - orange/yellow for warnings */
+    --warning-color: #FF9800;
+    
+    /* Info color - blue for information */
+    --info-color: #2196F3;
+    
+    /* Gold color - for 1st place */
+    --gold-color: #FFD700;
+    
+    /* Silver color - for 2nd place */
+    --silver-color: #C0C0C0;
+    
+    /* Bronze color - for 3rd place */
+    --bronze-color: #CD7F32;
+    
+    /* ======================================================================== */
+    /* DIFFICULTY COLORS */
+    /* ======================================================================== */
+    
+    /* Easy difficulty - green */
+    --easy-color: #4CAF50;
+    
+    /* Medium difficulty - orange */
+    --medium-color: #FF9800;
+    
+    /* Hard difficulty - red */
+    --hard-color: #F44336;
+    
+    /* ======================================================================== */
+    /* SPACING AND SIZING */
+    /* ======================================================================== */
+    
+    /* Border radius for rounded corners */
+    --border-radius: 10px;
+    
+    /* Border radius for smaller elements */
+    --border-radius-small: 5px;
+    
+    /* Box shadow for depth */
+    --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    
+    /* Box shadow for hover states */
+    --box-shadow-hover: 0 6px 12px rgba(0, 0, 0, 0.4);
+    
+    /* Transition duration for smooth animations */
+    --transition-speed: 0.3s;
+    
+    /* Maximum content width */
+    --max-content-width: 1200px;
+    
+    /* Navbar height */
+    --navbar-height: 60px;
+    
+}
+
+/* ============================================================================ */
+/* CSS RESET AND BASE STYLES */
+/* Normalize default browser styles */
+/* ============================================================================ */
+
+/* Reset all elements to use border-box sizing */
+/* This makes width/height include padding and border */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* Base HTML element styles */
+html {
+    /* Set base font size for rem calculations */
+    font-size: 16px;
+    
+    /* Smooth scrolling for anchor links */
+    scroll-behavior: smooth;
+}
+
+/* Body styles */
+body {
+    /* Use system fonts for better performance and native feel */
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    
+    /* Set primary background color */
+    background-color: var(--bg-primary);
+    
+    /* Set primary text color */
+    color: var(--text-primary);
+    
+    /* Set base line height for readability */
+    line-height: 1.6;
+    
+    /* Minimum height to fill viewport */
+    min-height: 100vh;
+    
+    /* Prevent horizontal scrolling */
+    overflow-x: hidden;
+}
+
+/* Remove default list styles */
+ul, ol {
+    list-style: none;
+}
+
+/* Remove default link styles */
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* Remove default button styles */
+button {
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: inherit;
+}
+
+/* Remove default input styles */
+input {
+    border: none;
+    outline: none;
+    font-family: inherit;
+    font-size: inherit;
+}
+
+/* ============================================================================ */
+/* NAVBAR STYLES */
+/* Header navigation bar present on most pages */
+/* ============================================================================ */
+
+/* Navbar container */
+.navbar {
+    /* Fixed position at top of page */
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    
+    /* Set height */
+    height: var(--navbar-height);
+    
+    /* Background color */
+    background-color: var(--bg-secondary);
+    
+    /* Add shadow for depth */
+    box-shadow: var(--box-shadow);
+    
+    /* Flexbox for layout */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    
+    /* Padding on sides */
+    padding: 0 20px;
+    
+    /* Ensure navbar is above other content */
+    z-index: 1000;
+}
+
+/* Navbar brand/logo section */
+.navbar-brand {
+    /* Flexbox for alignment */
+    display: flex;
+    align-items: center;
+}
+
+/* Logo link */
+.navbar-logo {
+    /* Font styling */
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent-primary);
+    
+    /* Transition for hover effect */
+    transition: color var(--transition-speed);
+}
+
+/* Logo hover state */
+.navbar-logo:hover {
+    color: var(--accent-primary-hover);
+}
+
+/* Navigation menu */
+.navbar-menu {
+    /* Flexbox for horizontal layout */
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+/* Navigation links */
+.navbar-link {
+    /* Font styling */
+    font-size: 1rem;
+    color: var(--text-secondary);
+    
+    /* Padding for click area */
+    padding: 8px 16px;
+    
+    /* Border radius */
+    border-radius: var(--border-radius-small);
+    
+    /* Transition for hover effect */
+    transition: color var(--transition-speed), background-color var(--transition-speed);
+}
+
+/* Navigation link hover state */
+.navbar-link:hover {
+    color: var(--text-primary);
+    background-color: var(--bg-tertiary);
+}
+
+/* Active navigation link */
+.navbar-link.active {
+    color: var(--accent-primary);
+    background-color: rgba(76, 175, 80, 0.1);
+}
+
+/* Logout button */
+.navbar-logout {
+    /* Font styling */
+    font-size: 1rem;
+    color: var(--text-secondary);
+    
+    /* Padding */
+    padding: 8px 16px;
+    
+    /* Border radius */
+    border-radius: var(--border-radius-small);
+    
+    /* Transition */
+    transition: color var(--transition-speed), background-color var(--transition-speed);
+}
+
+/* Logout button hover */
+.navbar-logout:hover {
+    color: var(--error-color);
+    background-color: rgba(244, 67, 54, 0.1);
+}
+
+/* Navbar user display */
+.navbar-user {
+    /* Font styling */
+    font-size: 0.9rem;
+    color: var(--text-tertiary);
+}
+
+/* ============================================================================ */
+/* MAIN CONTENT AREA */
+/* Container for page content below navbar */
+/* ============================================================================ */
+
+/* Main content container */
+.main-content {
+    /* Add top padding to account for fixed navbar */
+    padding-top: calc(var(--navbar-height) + 30px);
+    
+    /* Add padding on all sides */
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 40px;
+    
+    /* Maximum width with auto margins for centering */
+    max-width: var(--max-content-width);
+    margin: 0 auto;
+    
+    /* Minimum height to fill viewport */
+    min-height: 100vh;
+}
+
+/* ============================================================================ */
+/* LOGIN PAGE STYLES */
+/* Styles specific to the login/signup page */
+/* ============================================================================ */
+
+/* Login page body class */
+.login-page {
+    /* Center content vertically and horizontally */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    /* Full viewport height */
+    min-height: 100vh;
+    
+    /* Padding for small screens */
+    padding: 20px;
+}
+
+/* Login container */
+.login-container {
+    /* Full width with max constraint */
+    width: 100%;
+    max-width: 450px;
+}
+
+/* Login box card */
+.login-box {
+    /* Background color */
+    background-color: var(--bg-secondary);
+    
+    /* Border radius for rounded corners */
+    border-radius: var(--border-radius);
+    
+    /* Padding inside the box */
+    padding: 40px;
+    
+    /* Box shadow for depth */
+    box-shadow: var(--box-shadow);
+}
+
+/* Login title */
+.login-title {
+    /* Font styling */
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--accent-primary);
+    
+    /* Center text */
+    text-align: center;
+    
+    /* Bottom margin */
+    margin-bottom: 10px;
+}
+
+/* Login subtitle */
+.login-subtitle {
+    /* Font styling */
+    font-size: 1rem;
+    color: var(--text-secondary);
+    
+    /* Center text */
+    text-align: center;
+    
+    /* Bottom margin */
+    margin-bottom: 30px;
+}
+
+/* Tab container */
+.tab-container {
+    /* Flexbox for horizontal layout */
+    display: flex;
+    
+    /* Bottom margin */
+    margin-bottom: 25px;
+    
+    /* Background for tab container */
+    background-color: var(--bg-tertiary);
+    
+    /* Border radius */
+    border-radius: var(--border-radius-small);
+    
+    /* Padding */
+    padding: 5px;
+}
+
+/* Tab buttons */
+.tab-button {
+    /* Equal width for both tabs */
+    flex: 1;
+    
+    /* Padding */
+    padding: 12px 20px;
+    
+    /* Font styling */
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    
+    /* Border radius */
+    border-radius: var(--border-radius-small);
+    
+    /* Transition */
+    transition: color var(--transition-speed), background-color var(--transition-speed);
+}
+
+/* Tab button hover */
+.tab-button:hover {
+    color: var(--text-primary);
+}
+
+/* Active tab button */
+.tab-button.active {
+    color: var(--text-primary);
+    background-color: var(--bg-secondary);
+}
+
+/* ============================================================================ */
+/* FORM STYLES */
+/* Styles for forms across the application */
+/* ============================================================================ */
+
+/* Auth form and account form */
+.auth-form,
+.account-form,
+.play-form {
+    /* Flexbox for vertical layout */
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Hidden class for toggling visibility */
+.hidden {
+    display: none !important;
+}
+
+/* Input group container */
+.input-group {
+    /* Flexbox for vertical layout */
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Input labels */
+.input-group label {
+    /* Font styling */
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+/* Input fields */
+.input-group input {
+    /* Padding */
+    padding: 14px 16px;
+    
+    /* Background color */
+    background-color: var(--bg-tertiary);
+    
+    /* Border */
+    border: 2px solid transparent;
+    
+    /* Border radius */
+    border-radius: var(--border-radius-small);
+    
+    /* Font styling */
+    font-size: 1rem;
+    color: var(--text-primary);
+    
+    /* Transition for focus effect */
+    transition: border-color var(--transition-speed), background-color var(--transition-speed);
+}
+
+/* Input placeholder */
+.input-group input::placeholder {
+    color: var(--text-tertiary);
+}
+
+/* Input focus state */
+.input-group input:focus {
+    border-color: var(--accent-primary);
+    background-color: var(--bg-secondary);
+}
+
+/* Input helper text */
+.input-helper {
+    /* Font styling */
+    font-size: 0.85rem;
+    color: var(--text-tertiary);
+}
+
+/* Submit button */
+.submit-button {
+    /* Padding */
+    padding: 14px 20px;
+    
+    /* Background color */
+    background-color: var(--accent-primary);
+    
+    /* Font styling */
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    
+    /* Border radius */
+    border-radius: var(--border-radius-small);
+    
+    /* Transition */
+    transition: background-color var(--transition-speed), transform var(--transition-speed);
+    
+    /* Top margin */
+    margin-top: 10px;
+}
+
+/* Submit button hover */
+.submit-button:hover {
+    background-color: var(--accent-primary-hover);
+}
+
+/* Submit button active/pressed */
+.submit-button:active {
+    transform: scale(0.98);
+}
+
+/* Submit button disabled */
+.submit-button:disabled {
+    background-color: var(--bg-tertiary);
+    color: var(--text-tertiary);
+    cursor: not-allowed;
+}
+
+/* Loading state for buttons */
+.submit-button.loading,
+.start-quiz-button.loading {
+    opacity: 0.7;
+}
+
+/* ============================================================================ */
+/* MESSAGE BOX STYLES */
+/* Styles for success and error messages */
+/* ============================================================================ */
+
+/* Message box container */
+.message-box {
+    /* Hidden by default */
+    display: none;
+    
+    /* Padding */
+    padding: 12px 16px;
+    
+    /* Border radius */
+    border-radius: var(--border-radius-small);
+    
+    /* Font styling */
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+/* Show message box */
+.message-box.show {
+    display: block;
+}
+
+/* Success message */
+.message-box.success {
+    background-color: rgba(76, 175, 80, 0.2);
+    color: var(--accent-primary);
+    border: 1px solid var(--accent-primary);
+}
+
+/* Error message */
+.message-box.error {
+    background-color: rgba(244, 67, 54, 0.2);
+    color: var(--error-color);
+    border: 1px solid var(--error-color);
+}
+
+/* ============================================================================ */
+/* HOME PAGE STYLES */
+/* Styles specific to the home page */
+/* ============================================================================ */
+
+/* Welcome section */
+.welcome-section {
+    /* Center text */
+    text-align: center;
+    
+    /* Bottom margin */
+    margin-bottom: 40px;
+}
+
+/* Welcome title */
+.welcome-title {
+    /* Font styling */
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    
+    /* Bottom margin */
+    margin-bottom: 10px;
+}
+
+/* Welcome subtitle */
+.welcome-subtitle {
+    /* Font styling */
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+}
+
+/* Stats section */
+.stats-section {
+    /* Bottom margin */
+    margin-bottom: 40px;
+}
+
+/* Section title */
+.section-title {
+    /* Font styling */
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    
+    /* Bottom margin */
+    margin-bottom: 20px;
+}
+
+/* Stats container */
+.stats-container {
+    /* Grid layout for stat cards */
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+/* Individual stat card */
+.stat-card {
+    /* Background color */
+    background-color: var(--bg-secondary);
+    
+    /* Padding */
+    padding: 25px;
+    
+    /* Border radius */
+    border-radius: var(--border-radius);
+    
+    /* Box shadow */
+    box-shadow: var(--box-shadow);
+    
+    /* Flexbox for vertical layout */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    
+    /* Transition for hover */
+    transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+}
+
+/* Stat card hover */
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--box-shadow-hover);
+}
+
+/* Stat label */
+.stat-label {
+    /* Font styling */
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+/* Stat value */
+.stat-value {
+    /* Font styling */
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--accent-primary);
+}
+
+/* Play section */
+.play-section {
+    /* Center content */
+    text-align: center;
+    
+    /* Margin */
+    margin-bottom: 40px;
+}
+
+/* Play now button */
+.play-button {
+    /* Display as inline block */
+    display: inline-block;
+    
+    /* Padding */
+    padding: 18px 60px;
+    
+    /* Background color */
+    background-color: var(--accent-primary);
+    
+    /* Font styling */
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    
+    /* Border radius */
+    border-radius: var(--border-radius);
+    
+    /* Box shadow */
+    box-shadow: var(--box-shadow);
+    
+    /* Transition */
+    transition: background-color var(--transition-speed), transform var(--transition-speed), box-shadow var(--transition-speed);
+}
+
+/* Play button hover */
+.play-button:hover {
+    background-color: var(--accent-primary-hover);
+    transform: translateY(-3px);
+    box-shadow: var(--box-shadow-hover);
+}
+
+/* Play button active */
+.play-button:active {
+    transform: translateY(0);
+}
+
+/* History section */
+.history-section {
+    /* Bottom margin */
+    margin-bottom: 40px;
+}
+
+/* History container */
+.history-container {
+    /* Flexbox for vertical layout */
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* No history message */
+.no-history {
+    /* Background */
+    background-color: var(--bg-secondary);
+    
+    /* Padding */
+    padding: 40px;
+    
+    /* Border radius */
+    border-radius: var(--border-radius);
+    
+    /* Text alignment */
+    text-align: center;
+    
+    /* Text color */
+    color: var(--text-secondary);
+}
+
+/* History entry */
+.history-entry {
+    /* Background color */
+    background-color: var(--bg-secondary);
+    
+    /* Padding */
+    padding: 20px;
+    
+    /* Border radius */
+    border-radius: var(--border-radius);
+    
+    /* Box shadow */
+    box-shadow: var(--box-shadow);
+    
+    /* Flexbox for layout */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 15px;
+    
+    /* Transition for animations */
+    transition: opacity var(--transition-speed), transform var(--transition-speed);
+}
+
+/* History entry fade out animation */
+.history-entry.fade-out {
+    opacity: 0;
+    transform: translateX(-20px);
+}
+
+/* History info container */
+.history-info {
+    /* Flexbox for layout */
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+/* History topic */
+.history-topic {
+    /* Font styling */
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* History date */
+.history-date {
+    /* Font styling */
+    font-size: 0.85rem;
+    color: var(--text-tertiary);
+}
+
+/* History result container */
+.history-result {
+    /* Flexbox for layout */
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+/* History score */
+.history-score {
+    /* Font styling */
+    font-size: 1rem;
+    color: var(--text-secondary);
+}
+
+/* History status */
+.history-status {
+    /* Padding */
+    padding: 6px 14px;
+    
+    /* Border radius */
+    border-radius: var(--border-radius-small);
+    
+    /* Font styling */
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+/* Won status */
+.history-status.result-won {
+    background-color: rgba(76, 175, 80, 0.2);
+    color: var(--accent-primary);
+}
+
+/* Lost status */
+.history-status.result-lost {
+    background-color: rgba(244, 67, 54, 0.2);
+    color: var(--error-color);
+}
+
+/* History delete button */
+.history-delete-btn {
+    /* Padding */
+    padding: 8px 16px;
+    
+    /* Background */
+    background-color: transparent;
+    
+    /* Border */
+    border: 1px solid var(--error-color);
+    
+    /* Border radius */
+    border-radius: var(--border-radius-small);
+    
+    /* Font styling */
+    font-size: 0.9rem;
+    color: var(--error-color);
+    
+    /* Transition */
+    transition: background-color var(--transition-speed), color var(--transition-speed);
+}
+
+/* History delete button hover */
+.history-delete-btn:hover {
+    background-color: var(--error-color);
+    color: var(--text-primary);
+}
+
+/* Loading message */
+.loading-message {
+    /* Text alignment */
+    text-align: center;
+    
+    /* Padding */
+    padding: 40px;
+    
+    /* Color */
+    color: var(--text-secondary);
+}
+
+/* History error message */
+.history-error {
+    /* Background */
+    background-color: var(--bg-secondary);
+    
+    /* Padding */
+    padding: 40px;
+    
+    /* Border radius */
+    border-radius: var(--border-radius);
+    
+    /* Text alignment */
+    text-align: center;
+    
+    /* Text color */
+    color: var(--error-color);
+}
+
+/* ============================================================================ */
+/* PLAY PAGE STYLES */
+/* Styles specific to the game setup page */
+/* ============================================================================ */
+
+/* Play setup section */
+.play-setup-section {
+    /* Maximum width */
+    max-width: 600px;
+    
+    /* Center horizontally */
+    margin: 0 auto;
+    
+    /* Text alignment */
+    text-align: center;
+}
+
+/* Page title */
+.page-title {
+    /* Font styling */
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    
+    /* Bottom margin */
+    margin-bottom: 10px;
+}
+
+/* Page subtitle */
+.page-subtitle {
+    /* Font styling */
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    
+    /* Bottom margin */
+    margin-bottom: 30px;
+}
+
+/* Play setup card */
+.play-setup-card {
+    /* Background color */
+    background-color: var(--bg-secondary);
+    
+    /* Padding */
+    padding: 40px;
+    
+    /* Border radius */
+    border-radius: var(--border-radius);
+    
+    /* Box shadow */
+    box-shadow: var(--box-shadow);
+    
+    /* Text alignment */
+    text-align: left;
+    
+    /* Position for loading overlay */
+    position: relative;
+}
+
+/* Difficulty info box */
+.difficulty-info-box {
+    /* Background */
+    background-color: var(--bg-tertiary);
+    
+    /* Padding */
+    padding: 20px;
+    
+    /* Border radius */
+    border-radius: var(--border-radius-small);
+    
+    /* Margin */
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+/* Difficulty info title */
+.difficulty-info-title {
+    /* Font styling */
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    
+    /* Bottom margin */
+    margin-bottom: 15px;
+}
+
+/* Difficulty list */
+.difficulty-list {
+    /* Flexbox for layout */
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Difficulty item */
+.difficulty-item {
+    /* Flexbox for layout */
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Difficulty badge */
+.difficulty-badge {
+    /* Padding */
+    padding: 4px 10px;
+    
+    /* Border radius */
+    border-radius: var(--border-radius-small);
+    
+    /* Font styling */
+    font-size: 0.75rem;
+    font-weight: 700;
+    
+    /* Minimum width for consistency */
+    min-width: 70px;
+    text-align: center;
+}
+
+/* Easy badge */
+.difficulty-badge.easy {
+    background-color: rgba(76, 175, 80, 0.2);
+    color: var(--easy-color);
+}
+
+/* Medium badge */
+.difficulty-badge.medium {
+    background-color: rgba(255, 152, 0, 0.2);
+    color: var(--medium-color);
+}
+
+/* Hard badge */
+.difficulty-badge.hard {
+    background-color: rgba(244, 67, 54, 0.2);
+    color: var(--hard-color);
+}
+
+/* Difficulty text */
+.difficulty-text {
+    /* Font styling */
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+/* Win condition text */
+.win-condition {
+    /* Font styling */
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--accent-primary);
+    
+    /* Top margin */
+    margin-top: 15px;
+    
+    /* Text alignment */
+    text-align: center;
+}
+
+/* Start quiz button */
+.start-quiz-button {
+    /* Full width */
+    width: 100%;
+    
+    /* Padding */
+    padding: 16px 20px;
+    
+    /* Background color */
+    background-color: var(--accent-primary);
+    
+    /* Font styling */
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    
+    /* Border radius */
+    border-radius: var(--border-radius-small);
+    
+    /* Transition */
+    transition: background-color var(--transition-speed), transform var(--transition-speed);
+}
+
+/* Start quiz button hover */
+.start-quiz-button:hover {
+    background-color: var(--accent-primary-hover);
+}
+
+/* Start quiz button disabled */
+.start-quiz-button:disabled {
+    background-color: var(--bg-tertiary);
+    color: var(--text-tertiary);
+    cursor: not-allowed;
+}
+
+/* Back link */
+.back-link {
+    /* Display block for full width click area */
+    display: inline-block;
+    
+    /* Margin */
+    margin-top: 20px;
+    
+    /* Font styling */
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    
+    /* Transition */
+    transition: color var(--transition-speed);
+}
+
+/* Back link hover */
+.back-link:hover {
+    color: var(--text-primary);
+}
+
+/* ============================================================================ */
+/* LOADING OVERLAY STYLES */
+/* Full-screen loading overlay */
+/* ============================================================================ */
+
+/* Loading overlay */
+.loading-overlay {
+    /* Position fixed to cover entire viewport */
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    
+    /* Background with opacity */
+    background-color: rgba(18, 18, 18, 0.95);
+    
+    /* Flexbox for centering */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    
+    /* High z-index to appear above everything */
+    z-index: 2000;
+}
+
+/* Loading spinner */
+.loading-spinner {
+    /* Size */
+    width: 60px;
+    height: 60px;
+    
+    /* Border styling to create spinner */
+    border: 4px solid var(--bg-tertiary);
+    border-top-color: var(--accent-primary);
+    
+    /* Make it circular */
+    border-radius: 50%;
+    
+    /* Spinning animation */
+    animation: spin 1s linear infinite;
+}
+
+/* Spin animation keyframes */
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Loading text */
+.loading-text {
+    /* Font styling */
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* Loading subtext */
+.loading-subtext {
+    /* Font styling */
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+}
+
+/* ============================================================================ */
+/* QUIZ PAGE STYLES */
+/* Styles specific to the quiz/game page */
+/* ============================================================================ */
+
+/* Quiz page body */
+.quiz-page {
+    /* Flexbox for centering */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    /* Full viewport height */
+    min-height: 100vh;
+    
+    /* Padding */
+    padding: 20px;
+}
+
+/* Quiz container */
+.quiz-container {
+    /* Full width with max constraint */
+    width: 100%;
+    max-width: 700px;
+}
+
+/* Quiz header */
+.quiz-header {
+    /* Text alignment */
+    text-align: center;
+    
+    /* Bottom margin */
+    margin-bottom: 30px;
+}
+
+/* Quiz topic */
+.quiz-topic {
+    /* Font styling */
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    
+    /* Bottom margin */
+    margin-bottom: 15px;
+}
+
+/* Quiz progress */
+.quiz-progress {
+    /* Bottom margin */
+    margin-bottom: 15px;
+}
+
+/* Progress text */
+.progress-text {
+    /* Font styling */
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    
+    /* Display block */
+    display: block;
+    
+    /* Bottom margin */
+    margin-bottom: 10px;
+}
+
+/* Progress bar container */
+.progress-bar-container {
+    /* Height */
+    height: 8px;
+    
+    /* Background */
+    background-color: var(--bg-tertiary);
+    
+    /* Border radius */
+    border-radius: 4px;
+    
+    /* Overflow hidden for fill */
+    overflow: hidden;
+}
+
+/* Progress bar fill */
+.progress-bar-fill {
+    /* Height */
+    height: 100%;
+    
+    /* Initial width (set by JavaScript) */
+    width: 0%;
+    
+    /* Background */
+    background-color: var(--accent-primary);
+    
+    /* Border radius */
+    border-radius: 4px;
+    
+    /* Transition for smooth animation */
+    transition: width 0.5s ease;
+}
+
+/* Difficulty display */
+.difficulty-display {
+    /* Display inline */
+    display: inline-block;
+}
+
+/* Question card */
+.question-card {
+    /* Background */
+    background-color: var(--bg-secondary);
+    
+    /* Padding */
+    padding: 35px;
+    
+    /* Border radius */
+    border-radius: var(--border-radius);
+    
+    /* Box shadow */
+    box-shadow: var(--box-shadow);
+    
+    /* Bottom margin */
+    margin-bottom: 25px;
+}
+
+/* Slide in animation */
+.question-card.slide-in {
+    animation: slideIn 0.4s ease;
+}
+
+/* Slide in keyframes */
+@keyframes slideIn {
+    0% {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Question text */
+.question-text {
+    /* Font styling */
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    line-height: 1.7;
+    
+    /* Bottom margin */
+    margin-bottom: 30px;
+}
+
+/* Options container */
+.options-container {
+    /* Flexbox for vertical layout */
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Option button */
+.option-button {
+    /* Flexbox for layout */
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    
+    /* Full width */
+    width: 100%;
+    
+    /* Padding */
+    padding: 16px 20px;
+    
+    /* Background */
+    background-color: var(--bg-tertiary);
+    
+    /* Border */
+    border: 2px solid transparent;
+    
+    /* Border radius */
+    border-radius: var(--border-radius-small);
+    
+    /* Text alignment */
+    text-align: left;
+    
+    /* Transition */
+    transition: background-color var(--transition-speed), border-color var(--transition-speed), transform var(--transition-speed);
+}
+
+/* Option button hover */
+.option-button:hover:not(:disabled) {
+    background-color: var(--bg-secondary);
+    border-color: var(--accent-primary);
+    transform: translateX(5px);
+}
+
+/* Option button disabled */
+.option-button:disabled {
+    cursor: not-allowed;
+}
+
+/* Option letter */
+.option-letter {
+    /* Size */
+    width: 32px;
+    height: 32px;
+    
+    /* Flexbox for centering */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    /* Background */
+    background-color: var(--bg-primary);
+    
+    /* Border radius */
+    border-radius: 50%;
+    
+    /* Font styling */
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    
+    /* Flex shrink */
+    flex-shrink: 0;
+}
+
+/* Option text */
+.option-text {
+    /* Font styling */
+    font-size: 1rem;
+    color: var(--text-primary);
+}
+
+/* Selected option */
+.option-button.selected {
+    border-color: var(--info-color);
+    background-color: rgba(33, 150, 243, 0.1);
+}
+
+/* Correct option */
+.option-button.correct {
+    border-color: var(--accent-primary);
+    background-color: rgba(76, 175, 80, 0.2);
+}
+
+.option-button.correct .option-letter {
+    background-color: var(--accent-primary);
+    color: var(--text-primary);
+}
+
+/* Incorrect option */
+.option-button.incorrect {
+    border-color: var(--error-color);
+    background-color: rgba(244, 67, 54, 0.2);
+}
+
+.option-button.incorrect .option-letter {
+    background-color: var(--error-color);
+    color: var(--text-primary);
+}
+
+/* Quiz footer */
+.quiz-footer {
+    /* Flexbox for layout */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Current score */
+.current-score {
+    /* Font styling */
+    font-size: 1rem;
+    color: var(--text-secondary);
+}
+
+/* Score label */
+.score-label {
+    /* Margin right */
+    margin-right: 5px;
+}
+
+/* Score value */
+.score-value {
+    /* Font styling */
+    font-weight: 600;
+    color: var(--accent-primary);
+}
+
+/* Exit quiz button */
+.exit-quiz-button {
+    /* Padding */
+    padding: 10px 20px;
+    
+    /* Background */
+    background-color: transparent;
+    
+    /* Border */
+    border: 1px solid var(--text-tertiary);
+    
+    /* Border radius */
+    border-radius: var(--border-radius-small);
+    
+    /* Font styling */
+    font-size: 0.9rem;
+    color: var(--text-tertiary);
+    
+    /* Transition */
+    transition: border-color var(--transition-speed), color var(--transition-speed);
+}
+
+/* Exit quiz button hover */
+.exit-quiz-button:hover {
+    border-color: var(--error-color);
+    color: var(--error-color);
+}
+
+/* ============================================================================ */
+/* MODAL STYLES */
+/* Styles for modal dialogs */
+/* ============================================================================ */
+
+/* Modal overlay */
+.modal-overlay {
+    /* Fixed position to cover viewport */
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    
+    /* Background with opacity */
+    background-color: rgba(0, 0, 0, 0.8);
+    
+    /* Flexbox for centering */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    /* Padding */
+    padding: 20px;
+    
+    /* High z-index */
+    z-index: 3000;
+}
+
+/* Modal box */
+.modal-box {
+    /* Background */
+    background-color: var(--bg-secondary);
+    
+    /* Padding */
+    padding: 35px;
+    
+    /* Border radius */
+    border-radius: var(--border-radius);
+    
+    /* Box shadow */
+    box-shadow: var(--box-shadow);
+    
+    /* Max width */
+    max-width: 450px;
+    width: 100%;
+    
+    /* Text alignment */
+    text-align: center;
+}
+
+/* Danger modal */
+.modal-box.danger-modal {
+    border: 2px solid var(--error-color);
+}
+
+/* Modal title */
+.modal-title {
+    /* Font styling */
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    
+    /* Bottom margin */
+    margin-bottom: 15px;
+}
+
+/* Danger modal title */
+.modal-title.danger-title {
+    color: var(--error-color);
+}
+
+/* Modal message */
+.modal-message {
+    /* Font styling */
+    font-size: 1rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    
+    /* Bottom margin */
+    margin-bottom: 25px;
+}
+
+/* Modal input group */
+.modal-input-group {
+    /* Bottom margin */
+    margin-bottom: 20px;
+    
+    /* Text alignment */
+    text-align: left;
+}
+
+/* Modal input group label */
+.modal-input-group label {
+    /* Display block */
+    display: block;
+    
+    /* Font styling */
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    
+    /* Bottom margin */
+    margin-bottom: 8px;
+}
+
+/* Modal input group input */
+.modal-input-group input {
+    /* Full width */
+    width: 100%;
+    
+    /* Padding */
+    padding: 12px 14px;
+    
+    /* Background */
+    background-color: var(--bg-tertiary);
+    
+    /* Border */
+    border: 2px solid transparent;
+    
+    /* Border radius */
+    border-radius: var(--border-radius-small);
+    
+    /* Font styling */
+    font-size: 1rem;
+    color: var(--text-primary);
+    
+    /* Transition */
+    transition: border-color var(--transition-speed);
+}
+
+/* Modal input focus */
+.modal-input-group input:focus {
+    border-color: var(--error-color);
+}
+
+/* Modal error */
+.modal-error {
+    /* Background */
+    background-color: rgba(244, 67, 54, 0.2);
+    
+    /* Padding */
+    padding: 10px 14px;
+    
+    /* Border radius */
+    border-radius: var(--border-radius-small);
+    
+    /* Font styling */
+    font-size: 0.9rem;
+    color: var(--error-color);
+    
+    /* Bottom margin */
+    margin-bottom: 20px;
+}
+
+/* Modal buttons container */
+.modal-buttons {
+    /* Flexbox for layout */
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+/* Modal button */
+.modal-button {
+    /* Padding */
+    padding: 12px 25px;
+    
+    /* Border radius */
+    border-radius: var(--border-radius-small);
+    
+    /* Font styling */
+    font-size: 1rem;
+    font-weight: 500;
+    
+    /* Transition */
+    transition: background-color var(--transition-speed), transform var(--transition-speed);
+}
+
+/* Cancel button */
+.modal-button.cancel {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.modal-button.cancel:hover {
+    background-color: var(--bg-primary);
+}
+
+/* Confirm button */
+.modal-button.confirm {
+    background-color: var(--accent-primary);
+    color: var(--text-primary);
+}
+
+.modal-button.confirm:hover {
+    background-color: var(--accent-primary-hover);
+}
+
+/* Danger confirm button */
+.modal-button.confirm.danger {
+    background-color: var(--error-color);
+}
+
+.modal-button.confirm.danger:hover {
+    background-color: var(--error-hover);
+}
+
+/* Modal button disabled */
+.modal-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* ============================================================================ */
+/* RESULTS PAGE STYLES */
+/* Styles specific to the results page */
+/* ============================================================================ */
+
+/* Results page body */
+.results-page {
+    /* Flexbox for centering */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    /* Full viewport height */
+    min-height: 100vh;
+    
+    /* Padding */
+    padding: 20px;
+}
+
+/* Results container */
+.results-container {
+    /* Full width with max constraint */
+    width: 100%;
+    max-width: 550px;
+}
+
+/* Results card */
+.results-card {
+    /* Background */
+    background-color: var(--bg-secondary);
+    
+    /* Padding */
+    padding: 45px;
+    
+    /* Border radius */
+    border-radius: var(--border-radius);
+    
+    /* Box shadow */
+    box-shadow: var(--box-shadow);
+    
+    /* Text alignment */
+    text-align: center;
+}
+
+/* Fade in animation */
+.results-card.fade-in {
+    animation: fadeIn 0.6s ease;
+}
+
+/* Fade in keyframes */
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Result status */
+.result-status {
+    /* Padding */
+    padding: 20px;
+    
+    /* Border radius */
+    border-radius: var(--border-radius-small);
+    
+    /* Bottom margin */
+    margin-bottom: 30px;
+}
+
+/* Won status */
+.result-status.won {
+    background-color: rgba(76, 175, 80, 0.2);
+}
+
+/* Lost status */
+.result-status.lost {
+    background-color: rgba(244, 67, 54, 0.2);
+}
+
+/* Status text */
+.status-text {
+    /* Font styling */
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.result-status.won .status-text {
+    color: var(--accent-primary);
+}
+
+.result-status.lost .status-text {
+    color: var(--error-color);
+}
+
+/* Score display */
+.score-display {
+    /* Font styling */
+    font-size: 4rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    
+    /* Bottom margin */
+    margin-bottom: 10px;
+}
+
+/* Score number */
+.score-number {
+    color: var(--accent-primary);
+}
+
+/* Score separator */
+.score-separator {
+    color: var(--text-tertiary);
+    margin: 0 5px;
+}
+
+/* Score total */
+.score-total {
+    color: var(--text-secondary);
+}
+
+/* Score label (under score display) */
+.results-card .score-label {
+    /* Font styling */
+    font-size: 1rem;
+    color: var(--text-secondary);
+    
+    /* Bottom margin */
+    margin-bottom: 25px;
+}
+
+/* Result message */
+.result-message {
+    /* Bottom margin */
+    margin-bottom: 25px;
+}
+
+/* Message text */
+.message-text {
+    /* Font styling */
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+/* Topic display */
+.topic-display {
+    /* Bottom margin */
+    margin-bottom: 25px;
+    
+    /* Font styling */
+    font-size: 0.95rem;
+}
+
+/* Topic label */
+.topic-label {
+    color: var(--text-tertiary);
+    margin-right: 5px;
+}
+
+/* Topic name */
+.topic-name {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+/* Score breakdown */
+.score-breakdown {
+    /* Background */
+    background-color: var(--bg-tertiary);
+    
+    /* Padding */
+    padding: 20px;
+    
+    /* Border radius */
+    border-radius: var(--border-radius-small);
+    
+    /* Bottom margin */
+    margin-bottom: 30px;
+}
+
+/* Breakdown title */
+.breakdown-title {
+    /* Font styling */
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    
+    /* Bottom margin */
+    margin-bottom: 15px;
+}
+
+/* Breakdown container */
+.breakdown-container {
+    /* Flexbox for layout */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Breakdown item */
+.breakdown-item {
+    /* Flexbox for layout */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Breakdown label */
+.breakdown-label {
+    /* Font styling */
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.breakdown-label.easy {
+    color: var(--easy-color);
+}
+
+.breakdown-label.medium {
+    color: var(--medium-color);
+}
+
+.breakdown-label.hard {
+    color: var(--hard-color);
+}
+
+/* Breakdown value */
+.breakdown-value {
+    /* Font styling */
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* Results actions */
+.results-actions {
+    /* Flexbox for layout */
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    
+    /* Bottom margin */
+    margin-bottom: 20px;
+}
+
+/* Results button */
+.results-button {
+    /* Display block for full width */
+    display: block;
+    
+    /* Padding */
+    padding: 14px 20px;
+    
+    /* Border radius */
+    border-radius: var(--border-radius-small);
+    
+    /* Font styling */
+    font-size: 1rem;
+    font-weight: 600;
+    
+    /* Text alignment */
+    text-align: center;
+    
+    /* Transition */
+    transition: background-color var(--transition-speed), transform var(--transition-speed);
+}
+
+/* Primary results button */
+.results-button.primary {
+    background-color: var(--accent-primary);
+    color: var(--text-primary);
+}
+
+.results-button.primary:hover {
+    background-color: var(--accent-primary-hover);
+}
+
+/* Secondary results button */
+.results-button.secondary {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.results-button.secondary:hover {
+    background-color: var(--bg-primary);
+}
+
+/* Home link */
+.home-link {
+    /* Font styling */
+    font-size: 0.95rem;
+    color: var(--text-tertiary);
+    
+    /* Transition */
+    transition: color var(--transition-speed);
+}
+
+.home-link:hover {
+    color: var(--text-primary);
+}
+
+/* Confetti canvas */
+#confetti-canvas {
+    /* Fixed position covering viewport */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    
+    /* Pointer events none so it doesn't block clicks */
+    pointer-events: none;
+    
+    /* High z-index but below modals */
+    z-index: 1500;
+    
+    /* Hidden by default */
+    display: none;
+    
+    /* Transition for fade out */
+    transition: opacity 0.5s ease;
+}
+
+/* ============================================================================ */
+/* LEADERBOARD PAGE STYLES */
+/* Styles specific to the leaderboard page */
+/* ============================================================================ */
+
+/* Leaderboard section */
+.leaderboard-section {
+    /* Maximum width */
+    max-width: 900px;
+    
+    /* Center horizontally */
+    margin: 0 auto;
+}
+
+/* Leaderboard card */
+.leaderboard-card {
+    /* Background */
+    background-color: var(--bg-secondary);
+    
+    /* Padding */
+    padding: 25px;
+    
+    /* Border radius */
+    border-radius: var(--border-radius);
+    
+    /* Box shadow */
+    box-shadow: var(--box-shadow);
+    
+    /* Bottom margin */
+    margin-bottom: 30px;
+}
+
+/* Table container */
+.table-container {
+    /* Overflow for horizontal scrolling on small screens */
+    overflow-x: auto;
+}
+
+/* Leaderboard table */
+.leaderboard-table {
+    /* Full width */
+    width: 100%;
+    
+    /* Border collapse */
+    border-collapse: collapse;
+}
+
+/* Table header */
+.leaderboard-table thead {
+    /* Background */
+    background-color: var(--bg-tertiary);
+}
+
+/* Table header cells */
+.leaderboard-table th {
+    /* Padding */
+    padding: 15px 12px;
+    
+    /* Text alignment */
+    text-align: left;
+    
+    /* Font styling */
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    
+    /* White space */
+    white-space: nowrap;
+}
+
+/* Table body cells */
+.leaderboard-table td {
+    /* Padding */
+    padding: 15px 12px;
+    
+    /* Font styling */
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    
+    /* Border bottom */
+    border-bottom: 1px solid var(--bg-tertiary);
+}
+
+/* Table row hover */
+.leaderboard-table tbody tr:hover {
+    background-color: var(--bg-tertiary);
+}
+
+/* Rank column */
+.rank-column {
+    width: 80px;
+}
+
+/* Rank cell */
+.rank-cell {
+    font-weight: 600;
+}
+
+/* Gold rank */
+.leaderboard-table tr.rank-gold .rank-cell {
+    color: var(--gold-color);
+}
+
+/* Silver rank */
+.leaderboard-table tr.rank-silver .rank-cell {
+    color: var(--silver-color);
+}
+
+/* Bronze rank */
+.leaderboard-table tr.rank-bronze .rank-cell {
+    color: var(--bronze-color);
+}
+
+/* Current user row */
+.leaderboard-table tr.current-user {
+    background-color: rgba(76, 175, 80, 0.1);
+}
+
+.leaderboard-table tr.current-user:hover {
+    background-color: rgba(76, 175, 80, 0.15);
+}
+
+/* You badge */
+.you-badge {
+    /* Margin left */
+    margin-left: 8px;
+    
+    /* Padding */
+    padding: 3px 8px;
+    
+    /* Background */
+    background-color: var(--accent-primary);
+    
+    /* Border radius */
+    border-radius: var(--border-radius-small);
+    
+    /* Font styling */
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* Win rate cell */
+.winrate-cell {
+    font-weight: 600;
+    color: var(--accent-primary);
+}
+
+/* Leaderboard info box */
+.leaderboard-info {
+    /* Background */
+    background-color: var(--bg-secondary);
+    
+    /* Padding */
+    padding: 25px;
+    
+    /* Border radius */
+    border-radius: var(--border-radius);
+    
+    /* Box shadow */
+    box-shadow: var(--box-shadow);
+    
+    /* Bottom margin */
+    margin-bottom: 30px;
+}
+
+/* Info title */
+.info-title {
+    /* Font styling */
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    
+    /* Bottom margin */
+    margin-bottom: 15px;
+}
+
+/* Info list */
+.info-list {
+    /* Flexbox for layout */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Info item */
+.info-item {
+    /* Font styling */
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    
+    /* Padding left for bullet point effect */
+    padding-left: 20px;
+    
+    /* Position for custom bullet */
+    position: relative;
+}
+
+/* Custom bullet point */
+.info-item::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 8px;
+    width: 6px;
+    height: 6px;
+    background-color: var(--accent-primary);
+    border-radius: 50%;
+}
+
+/* Your rank card */
+.your-rank-card {
+    /* Background */
+    background-color: var(--bg-secondary);
+    
+    /* Padding */
+    padding: 20px 25px;
+    
+    /* Border radius */
+    border-radius: var(--border-radius);
+    
+    /* Box shadow */
+    box-shadow: var(--box-shadow);
+    
+    /* Border left accent */
+    border-left: 4px solid var(--accent-primary);
+}
+
+/* Your rank card with gold styling */
+.your-rank-card.rank-gold {
+    border-left-color: var(--gold-color);
+}
+
+/* Your rank card with silver styling */
+.your-rank-card.rank-silver {
+    border-left-color: var(--silver-color);
+}
+
+/* Your rank card with bronze styling */
+.your-rank-card.rank-bronze {
+    border-left-color: var(--bronze-color);
+}
+
+/* Your rank text */
+.your-rank-text {
+    /* Font styling */
+    font-size: 1rem;
+    color: var(--text-primary);
+}
+
+/* No data message */
+.no-data {
+    /* Padding */
+    padding: 40px;
+    
+    /* Text alignment */
+    text-align: center;
+    
+    /* Color */
+    color: var(--text-secondary);
+}
+
+/* Error message */
+.error-message {
+    /* Padding */
+    padding: 40px;
+    
+    /* Text alignment */
+    text-align: center;
+    
+    /* Color */
+    color: var(--error-color);
+}
+
+/* ============================================================================ */
+/* ACCOUNT PAGE STYLES */
+/* Styles specific to the account settings page */
+/* ============================================================================ */
+
+/* Account section */
+.account-section {
+    /* Maximum width */
+    max-width: 600px;
+    
+    /* Center horizontally */
+    margin: 0 auto;
+}
+
+/* Account card */
+.account-card {
+    /* Background */
+    background-color: var(--bg-secondary);
+    
+    /* Padding */
+    padding: 30px;
+    
+    /* Border radius */
+    border-radius: var(--border-radius);
+    
+    /* Box shadow */
+    box-shadow: var(--box-shadow);
+    
+    /* Bottom margin */
+    margin-bottom: 25px;
+}
+
+/* Card title */
+.card-title {
+    /* Font styling */
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    
+    /* Bottom margin */
+    margin-bottom: 15px;
+}
+
+/* Card description */
+.card-description {
+    /* Font styling */
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    
+    /* Bottom margin */
+    margin-bottom: 20px;
+}
+
+/* Account info container */
+.account-info {
+    /* Flexbox for layout */
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Info row */
+.info-row {
+    /* Flexbox for layout */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+    /* Padding */
+    padding: 10px 0;
+    
+    /* Border bottom */
+    border-bottom: 1px solid var(--bg-tertiary);
+}
+
+/* Last info row without border */
+.info-row:last-child {
+    border-bottom: none;
+}
+
+/* Info label */
+.info-label {
+    /* Font styling */
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+}
+
+/* Info value */
+.info-value {
+    /* Font styling */
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+/* Danger card styling */
+.account-card.danger-card {
+    /* Border */
+    border: 1px solid var(--error-color);
+}
+
+/* Danger title */
+.danger-title {
+    color: var(--error-color);
+}
+
+/* Danger text */
+.danger-text {
+    color: var(--text-secondary);
+}
+
+/* Warning list */
+.warning-list {
+    /* Bottom margin */
+    margin-bottom: 25px;
+}
+
+/* Warning item */
+.warning-item {
+    /* Font styling */
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    
+    /* Padding */
+    padding: 8px 0 8px 25px;
+    
+    /* Position for custom bullet */
+    position: relative;
+}
+
+/* Warning bullet */
+.warning-item::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 14px;
+    width: 8px;
+    height: 8px;
+    background-color: var(--error-color);
+    border-radius: 50%;
+}
+
+/* Delete button */
+.delete-button {
+    /* Full width */
+    width: 100%;
+    
+    /* Padding */
+    padding: 14px 20px;
+    
+    /* Background */
+    background-color: transparent;
+    
+    /* Border */
+    border: 2px solid var(--error-color);
+    
+    /* Border radius */
+    border-radius: var(--border-radius-small);
+    
+    /* Font styling */
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--error-color);
+    
+    /* Transition */
+    transition: background-color var(--transition-speed), color var(--transition-speed);
+}
+
+/* Delete button hover */
+.delete-button:hover {
+    background-color: var(--error-color);
+    color: var(--text-primary);
+}
+
+/* ============================================================================ */
+/* RESPONSIVE STYLES */
+/* Media queries for different screen sizes */
+/* ============================================================================ */
+
+/* Tablet and smaller screens */
+@media screen and (max-width: 768px) {
+    
+    /* Navbar adjustments */
+    .navbar {
+        /* Flex wrap for smaller screens */
+        flex-wrap: wrap;
+        height: auto;
+        padding: 10px 15px;
+    }
+    
+    .navbar-brand {
+        /* Full width on small screens */
+        width: 100%;
+        justify-content: center;
+        margin-bottom: 10px;
+    }
+    
+    .navbar-menu {
+        /* Center on small screens */
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .navbar-user {
+        /* Full width on small screens */
+        width: 100%;
+        text-align: center;
+        margin-top: 10px;
+    }
+    
+    /* Main content padding adjustment */
+    .main-content {
+        padding-top: 140px;
+    }
+    
+    /* Login box padding adjustment */
+    .login-box {
+        padding: 30px 20px;
+    }
+    
+    /* Stats container adjustment */
+    .stats-container {
+        grid-template-columns: 1fr;
+    }
+    
+    /* History entry adjustment */
+    .history-entry {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .history-result {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .history-delete-btn {
+        width: 100%;
+        margin-top: 10px;
+    }
+    
+    /* Play setup card padding adjustment */
+    .play-setup-card {
+        padding: 25px 20px;
+    }
+    
+    /* Question card padding adjustment */
+    .question-card {
+        padding: 25px 20px;
+    }
+    
+    /* Quiz footer adjustment */
+    .quiz-footer {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    /* Results card padding adjustment */
+    .results-card {
+        padding: 30px 20px;
+    }
+    
+    /* Score display size adjustment */
+    .score-display {
+        font-size: 3rem;
+    }
+    
+    /* Modal box padding adjustment */
+    .modal-box {
+        padding: 25px 20px;
+    }
+    
+    /* Modal buttons adjustment */
+    .modal-buttons {
+        flex-direction: column;
+    }
+    
+    .modal-button {
+        width: 100%;
+    }
+    
+    /* Leaderboard table font size */
+    .leaderboard-table th,
+    .leaderboard-table td {
+        font-size: 0.85rem;
+        padding: 12px 8px;
+    }
+    
+    /* Account card padding adjustment */
+    .account-card {
+        padding: 25px 20px;
+    }
+    
+}
+
+/* Mobile phones */
+@media screen and (max-width: 480px) {
+    
+    /* Further reduce font sizes */
+    .login-title {
+        font-size: 1.7rem;
+    }
+    
+    .welcome-title,
+    .page-title {
+        font-size: 1.6rem;
+    }
+    
+    .section-title {
+        font-size: 1.3rem;
+    }
+    
+    /* Play button size adjustment */
+    .play-button {
+        padding: 16px 40px;
+        font-size: 1.1rem;
+    }
+    
+    /* Stat value size adjustment */
+    .stat-value {
+        font-size: 1.7rem;
+    }
+    
+    /* Question text size adjustment */
+    .question-text {
+        font-size: 1.1rem;
+    }
+    
+    /* Option button adjustment */
+    .option-button {
+        padding: 14px 16px;
+    }
+    
+    .option-letter {
+        width: 28px;
+        height: 28px;
+        font-size: 0.85rem;
+    }
+    
+    /* Score display size adjustment */
+    .score-display {
+        font-size: 2.5rem;
+    }
+    
+    /* Status text size adjustment */
+    .status-text {
+        font-size: 1.6rem;
+    }
+    
+}
+
+/* ============================================================================ */
+/* UTILITY CLASSES */
+/* Reusable utility classes */
+/* ============================================================================ */
+
+/* Text alignment */
+.text-center {
+    text-align: center;
+}
+
+.text-left {
+    text-align: left;
+}
+
+.text-right {
+    text-align: right;
+}
+
+/* Margin utilities */
+.mt-10 {
+    margin-top: 10px;
+}
+
+.mt-20 {
+    margin-top: 20px;
+}
+
+.mb-10 {
+    margin-bottom: 10px;
+}
+
+.mb-20 {
+    margin-bottom: 20px;
+}
+
+/* Flex utilities */
+.flex {
+    display: flex;
+}
+
+.flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.flex-between {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Width utilities */
+.w-full {
+    width: 100%;
+}
+
+/* ============================================================================ */
+/* END OF STYLESHEET */
+/* ============================================================================ */

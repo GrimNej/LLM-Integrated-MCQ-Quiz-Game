@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- ================================================================== -->
+    <!-- HEAD SECTION -->
+    <!-- Contains metadata, title, and links to stylesheets -->
+    <!-- ================================================================== -->
+    
+    <!-- Set the character encoding for the document to UTF-8 -->
+    <meta charset="UTF-8">
+    
+    <!-- Make the page responsive on mobile devices -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Title that appears in the browser tab -->
+    <title>MCQ Quiz Game - Login</title>
+    
+    <!-- Link to our external CSS stylesheet for styling -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="login-page">
+    <!-- ================================================================== -->
+    <!-- MAIN CONTAINER -->
+    <!-- Centers the login box on the page -->
+    <!-- ================================================================== -->
+    
+    <div class="login-container">
+        
+        <!-- ============================================================== -->
+        <!-- LOGIN BOX -->
+        <!-- Contains the app title, tabs, and forms -->
+        <!-- ============================================================== -->
+        
+        <div class="login-box">
+            
+            <!-- App Title displayed at the top of the login box -->
+            <h1 class="login-title">MCQ Quiz Game</h1>
+            
+            <!-- Subtitle with a brief description -->
+            <p class="login-subtitle">Test your knowledge with AI-generated quizzes</p>
+            
+            <!-- ========================================================== -->
+            <!-- TAB BUTTONS -->
+            <!-- Allow users to switch between Login and Sign Up forms -->
+            <!-- ========================================================== -->
+            
+            <div class="tab-container">
+                
+                <!-- Login tab button - active by default -->
+                <!-- onclick calls switchTab function with 'login' parameter -->
+                <button class="tab-button active" id="login-tab" onclick="switchTab('login')">
+                    Login
+                </button>
+                
+                <!-- Sign Up tab button -->
+                <!-- onclick calls switchTab function with 'signup' parameter -->
+                <button class="tab-button" id="signup-tab" onclick="switchTab('signup')">
+                    Sign Up
+                </button>
+                
+            </div>
+            
+            <!-- ========================================================== -->
+            <!-- MESSAGE DISPLAY AREA -->
+            <!-- Shows success or error messages to the user -->
+            <!-- ========================================================== -->
+            
+            <!-- This div is hidden by default and shown when there's a message -->
+            <div class="message-box" id="message-box">
+                <!-- Message text will be inserted here by JavaScript -->
+                <span id="message-text"></span>
+            </div>
+            
+            <!-- ========================================================== -->
+            <!-- LOGIN FORM -->
+            <!-- Visible by default, hidden when Sign Up tab is active -->
+            <!-- ========================================================== -->
+            
+            <form class="auth-form" id="login-form" onsubmit="handleLogin(event)">
+                
+                <!-- Username input group -->
+                <div class="input-group">
+                    
+                    <!-- Label for the username field -->
+                    <label for="login-username">Username</label>
+                    
+                    <!-- Username text input -->
+                    <!-- required attribute prevents form submission if empty -->
+                    <input 
+                        type="text" 
+                        id="login-username" 
+                        name="username" 
+                        placeholder="Enter your username"
+                        required
+                        autocomplete="username"
+                    >
+                    
+                </div>
+                
+                <!-- Password input group -->
+                <div class="input-group">
+                    
+                    <!-- Label for the password field -->
+                    <label for="login-password">Password</label>
+                    
+                    <!-- Password input - type="password" hides the characters -->
+                    <input 
+                        type="password" 
+                        id="login-password" 
+                        name="password" 
+                        placeholder="Enter your password"
+                        required
+                        autocomplete="current-password"
+                    >
+                    
+                </div>
+                
+                <!-- Login submit button -->
+                <button type="submit" class="submit-button" id="login-button">
+                    Login
+                </button>
+                
+            </form>
+            
+            <!-- ========================================================== -->
+            <!-- SIGN UP FORM -->
+            <!-- Hidden by default, shown when Sign Up tab is active -->
+            <!-- ========================================================== -->
+            
+            <form class="auth-form hidden" id="signup-form" onsubmit="handleSignup(event)">
+                
+                <!-- Username input group -->
+                <div class="input-group">
+                    
+                    <!-- Label for the username field -->
+                    <label for="signup-username">Username</label>
+                    
+                    <!-- Username text input for new account -->
+                    <input 
+                        type="text" 
+                        id="signup-username" 
+                        name="username" 
+                        placeholder="Choose a username"
+                        required
+                        minlength="3"
+                        autocomplete="username"
+                    >
+                    
+                </div>
+                
+                <!-- Password input group -->
+                <div class="input-group">
+                    
+                    <!-- Label for the password field -->
+                    <label for="signup-password">Password</label>
+                    
+                    <!-- Password input for new account -->
+                    <input 
+                        type="password" 
+                        id="signup-password" 
+                        name="password" 
+                        placeholder="Choose a password"
+                        required
+                        minlength="4"
+                        autocomplete="new-password"
+                    >
+                    
+                </div>
+                
+                <!-- Confirm Password input group -->
+                <div class="input-group">
+                    
+                    <!-- Label for the confirm password field -->
+                    <label for="signup-confirm-password">Confirm Password</label>
+                    
+                    <!-- Confirm password input to verify the password -->
+                    <input 
+                        type="password" 
+                        id="signup-confirm-password" 
+                        name="confirm-password" 
+                        placeholder="Confirm your password"
+                        required
+                        minlength="4"
+                        autocomplete="new-password"
+                    >
+                    
+                </div>
+                
+                <!-- Sign Up submit button -->
+                <button type="submit" class="submit-button" id="signup-button">
+                    Sign Up
+                </button>
+                
+            </form>
+            
+        </div>
+        
+    </div>
+    
+    <!-- ================================================================== -->
+    <!-- JAVASCRIPT SECTION -->
+    <!-- Contains all the interactive functionality for this page -->
+    <!-- ================================================================== -->
+    
+    <script>
+        // ==================================================================
+        // TAB SWITCHING FUNCTION
+        // ==================================================================
+        
+        /**
+         * Switches between Login and Sign Up tabs.
+         * Shows the appropriate form and updates tab button styles.
+         * 
+         * @param {string} tab - Either 'login' or 'signup'
+         */
+        function switchTab(tab) {
+            
+            // Get references to both tab buttons
+            // These are the clickable buttons at the top
+            const loginTab = document.getElementById('login-tab');
+            const signupTab = document.getElementById('signup-tab');
+            
+            // Get references to both forms
+            // These are the form containers with input fields
+            const loginForm = document.getElementById('login-form');
+            const signupForm = document.getElementById('signup-form');
+            
+            // Get reference to the message box to hide it when switching tabs
+            const messageBox = document.getElementById('message-box');
+            
+            // Hide any existing messages when switching tabs
+            // This provides a clean slate for the new form
+            messageBox.classList.remove('show', 'success', 'error');
+            
+            // Check which tab was clicked
+            if (tab === 'login') {
+                
+                // Activate the login tab button
+                // Add 'active' class to show it's selected
+                loginTab.classList.add('active');
+                
+                // Deactivate the signup tab button
+                // Remove 'active' class since it's not selected
+                signupTab.classList.remove('active');
+                
+                // Show the login form
+                // Remove 'hidden' class to make it visible
+                loginForm.classList.remove('hidden');
+                
+                // Hide the signup form
+                // Add 'hidden' class to hide it
+                signupForm.classList.add('hidden');
+                
+            } else if (tab === 'signup') {
+                
+                // Activate the signup tab button
+                signupTab.classList.add('active');
+                
+                // Deactivate the login tab button
+                loginTab.classList.remove('active');
+                
+                // Show the signup form
+                signupForm.classList.remove('hidden');
+                
+                // Hide the login form
+                loginForm.classList.add('hidden');
+                
+            }
+            
+        }
+        
+        // ==================================================================
+        // MESSAGE DISPLAY FUNCTION
+        // ==================================================================
+        
+        /**
+         * Displays a message to the user (success or error).
+         * 
+         * @param {string} message - The message text to display
+         * @param {string} type - Either 'success' or 'error'
+         */
+        function showMessage(message, type) {
+            
+            // Get reference to the message box container
+            const messageBox = document.getElementById('message-box');
+            
+            // Get reference to the message text span
+            const messageText = document.getElementById('message-text');
+            
+            // Set the message text content
+            messageText.textContent = message;
+            
+            // Remove any existing type classes (success or error)
+            // This ensures we start with a clean state
+            messageBox.classList.remove('success', 'error');
+            
+            // Add the appropriate type class for styling
+            // This changes the background color based on message type
+            messageBox.classList.add(type);
+            
+            // Add the 'show' class to make the message visible
+            // This triggers the CSS to display the message box
+            messageBox.classList.add('show');
+            
+        }
+        
+        /**
+         * Hides the message box.
+         */
+        function hideMessage() {
+            
+            // Get reference to the message box container
+            const messageBox = document.getElementById('message-box');
+            
+            // Remove the 'show' class to hide the message
+            messageBox.classList.remove('show');
+            
+        }
+        
+        // ==================================================================
+        // BUTTON STATE FUNCTIONS
+        // ==================================================================
+        
+        /**
+         * Disables a button and shows loading state.
+         * 
+         * @param {HTMLElement} button - The button element to disable
+         * @param {string} loadingText - Text to show while loading
+         */
+        function setButtonLoading(button, loadingText) {
+            
+            // Disable the button to prevent multiple clicks
+            button.disabled = true;
+            
+            // Store the original text so we can restore it later
+            button.dataset.originalText = button.textContent;
+            
+            // Change the button text to show loading state
+            button.textContent = loadingText;
+            
+            // Add a loading class for styling (optional)
+            button.classList.add('loading');
+            
+        }
+        
+        /**
+         * Re-enables a button and restores its original text.
+         * 
+         * @param {HTMLElement} button - The button element to enable
+         */
+        function resetButton(button) {
+            
+            // Re-enable the button
+            button.disabled = false;
+            
+            // Restore the original button text
+            button.textContent = button.dataset.originalText;
+            
+            // Remove the loading class
+            button.classList.remove('loading');
+            
+        }
+        
+        // ==================================================================
+        // LOGIN HANDLER
+        // ==================================================================
+        
+        /**
+         * Handles the login form submission.
+         * Sends credentials to the server and processes the response.
+         * 
+         * @param {Event} event - The form submit event
+         */
+        async function handleLogin(event) {
+            
+            // Prevent the default form submission behavior
+            // This stops the page from refreshing
+            event.preventDefault();
+            
+            // Hide any existing messages
+            hideMessage();
+            
+            // Get the username input value and remove extra whitespace
+            const username = document.getElementById('login-username').value.trim();
+            
+            // Get the password input value and remove extra whitespace
+            const password = document.getElementById('login-password').value.trim();
+            
+            // Get reference to the login button
+            const loginButton = document.getElementById('login-button');
+            
+            // Validate that username is not empty
+            if (!username) {
+                // Show error message if username is empty
+                showMessage('Please enter your username', 'error');
+                // Stop the function here
+                return;
+            }
+            
+            // Validate that password is not empty
+            if (!password) {
+                // Show error message if password is empty
+                showMessage('Please enter your password', 'error');
+                // Stop the function here
+                return;
+            }
+            
+            // Set the button to loading state
+            setButtonLoading(loginButton, 'Logging in...');
+            
+            try {
+                
+                // Send a POST request to the login API endpoint
+                const response = await fetch('/api/login', {
+                    
+                    // Use POST method for sending login data
+                    method: 'POST',
+                    
+                    // Set the content type to JSON
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    
+                    // Convert the login data to a JSON string
+                    body: JSON.stringify({
+                        username: username,
+                        password: password
+                    })
+                    
+                });
+                
+                // Parse the JSON response from the server
+                const data = await response.json();
+                
+                // Check if login was successful
+                if (data.success) {
+                    
+                    // Show success message
+                    showMessage('Login successful! Redirecting...', 'success');
+                    
+                    // Redirect to the home page after a short delay
+                    // The delay allows the user to see the success message
+                    setTimeout(function() {
+                        // Navigate to the home page
+                        window.location.href = '/home';
+                    }, 1000);
+                    
+                } else {
+                    
+                    // Show the error message from the server
+                    showMessage(data.message, 'error');
+                    
+                    // Reset the button to its normal state
+                    resetButton(loginButton);
+                    
+                }
+                
+            } catch (error) {
+                
+                // Log the error to the console for debugging
+                console.error('Login error:', error);
+                
+                // Show a generic error message to the user
+                showMessage('An error occurred. Please try again.', 'error');
+                
+                // Reset the button to its normal state
+                resetButton(loginButton);
+                
+            }
+            
+        }
+        
+        // ==================================================================
+        // SIGNUP HANDLER
+        // ==================================================================
+        
+        /**
+         * Handles the signup form submission.
+         * Validates input, sends data to server, and processes response.
+         * 
+         * @param {Event} event - The form submit event
+         */
+        async function handleSignup(event) {
+            
+            // Prevent the default form submission behavior
+            event.preventDefault();
+            
+            // Hide any existing messages
+            hideMessage();
+            
+            // Get the username input value and remove extra whitespace
+            const username = document.getElementById('signup-username').value.trim();
+            
+            // Get the password input value and remove extra whitespace
+            const password = document.getElementById('signup-password').value.trim();
+            
+            // Get the confirm password input value and remove extra whitespace
+            const confirmPassword = document.getElementById('signup-confirm-password').value.trim();
+            
+            // Get reference to the signup button
+            const signupButton = document.getElementById('signup-button');
+            
+            // Validate that username is not empty
+            if (!username) {
+                showMessage('Please enter a username', 'error');
+                return;
+            }
+            
+            // Validate username length (minimum 3 characters)
+            if (username.length < 3) {
+                showMessage('Username must be at least 3 characters', 'error');
+                return;
+            }
+            
+            // Validate that password is not empty
+            if (!password) {
+                showMessage('Please enter a password', 'error');
+                return;
+            }
+            
+            // Validate password length (minimum 4 characters)
+            if (password.length < 4) {
+                showMessage('Password must be at least 4 characters', 'error');
+                return;
+            }
+            
+            // Validate that confirm password is not empty
+            if (!confirmPassword) {
+                showMessage('Please confirm your password', 'error');
+                return;
+            }
+            
+            // Check if password and confirm password match
+            if (password !== confirmPassword) {
+                showMessage('Passwords do not match', 'error');
+                return;
+            }
+            
+            // Set the button to loading state
+            setButtonLoading(signupButton, 'Creating account...');
+            
+            try {
+                
+                // Send a POST request to the signup API endpoint
+                const response = await fetch('/api/signup', {
+                    
+                    // Use POST method for sending signup data
+                    method: 'POST',
+                    
+                    // Set the content type to JSON
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    
+                    // Convert the signup data to a JSON string
+                    body: JSON.stringify({
+                        username: username,
+                        password: password
+                    })
+                    
+                });
+                
+                // Parse the JSON response from the server
+                const data = await response.json();
+                
+                // Check if signup was successful
+                if (data.success) {
+                    
+                    // Show success message
+                    showMessage('Account created successfully! Please login.', 'success');
+                    
+                    // Clear the signup form fields
+                    document.getElementById('signup-username').value = '';
+                    document.getElementById('signup-password').value = '';
+                    document.getElementById('signup-confirm-password').value = '';
+                    
+                    // Reset the button to its normal state
+                    resetButton(signupButton);
+                    
+                    // Switch to the login tab after a short delay
+                    setTimeout(function() {
+                        switchTab('login');
+                    }, 1500);
+                    
+                } else {
+                    
+                    // Show the error message from the server
+                    showMessage(data.message, 'error');
+                    
+                    // Reset the button to its normal state
+                    resetButton(signupButton);
+                    
+                }
+                
+            } catch (error) {
+                
+                // Log the error to the console for debugging
+                console.error('Signup error:', error);
+                
+                // Show a generic error message to the user
+                showMessage('An error occurred. Please try again.', 'error');
+                
+                // Reset the button to its normal state
+                resetButton(signupButton);
+                
+            }
+            
+        }
+        
+        // ==================================================================
+        // ENTER KEY HANDLER
+        // ==================================================================
+        
+        // Add event listener for Enter key on input fields
+        // This allows users to submit forms by pressing Enter
+        document.addEventListener('keypress', function(event) {
+            
+            // Check if the pressed key is Enter (key code 13 or key 'Enter')
+            if (event.key === 'Enter') {
+                
+                // Get the currently active element (the focused input)
+                const activeElement = document.activeElement;
+                
+                // Check if the active element is inside the login form
+                if (document.getElementById('login-form').contains(activeElement)) {
+                    // Trigger the login form submission
+                    document.getElementById('login-form').dispatchEvent(new Event('submit'));
+                }
+                
+                // Check if the active element is inside the signup form
+                if (document.getElementById('signup-form').contains(activeElement)) {
+                    // Trigger the signup form submission
+                    document.getElementById('signup-form').dispatchEvent(new Event('submit'));
+                }
+                
+            }
+            
+        });
+        
+    </script>
+    
+</body>
+</html>

@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- ================================================================== -->
+    <!-- HEAD SECTION -->
+    <!-- Contains metadata, title, and links to stylesheets -->
+    <!-- ================================================================== -->
+    
+    <!-- Set the character encoding for the document to UTF-8 -->
+    <meta charset="UTF-8">
+    
+    <!-- Make the page responsive on mobile devices -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Title that appears in the browser tab -->
+    <title>MCQ Quiz Game - Quiz</title>
+    
+    <!-- Link to our external CSS stylesheet for styling -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="quiz-page">
+    <!-- ================================================================== -->
+    <!-- NO HEADER NAVIGATION BAR ON THIS PAGE -->
+    <!-- This provides a focused game experience without distractions -->
+    <!-- ================================================================== -->
+    
+    <!-- ================================================================== -->
+    <!-- MAIN QUIZ CONTAINER -->
+    <!-- Contains all quiz elements centered on the page -->
+    <!-- ================================================================== -->
+    
+    <main class="quiz-container">
+        
+        <!-- ============================================================== -->
+        <!-- QUIZ HEADER -->
+        <!-- Shows topic, progress, and difficulty -->
+        <!-- ============================================================== -->
+        
+        <div class="quiz-header">
+            
+            <!-- Topic display -->
+            <h2 class="quiz-topic" id="quiz-topic">Loading...</h2>
+            
+            <!-- Progress indicator showing current question number -->
+            <div class="quiz-progress">
+                
+                <!-- Progress text (e.g., "Question 1 of 10") -->
+                <span class="progress-text" id="progress-text">Question 1 of 10</span>
+                
+                <!-- Progress bar container -->
+                <div class="progress-bar-container">
+                    
+                    <!-- Progress bar fill - width is set by JavaScript -->
+                    <div class="progress-bar-fill" id="progress-bar-fill"></div>
+                    
+                </div>
+                
+            </div>
+            
+            <!-- Difficulty badge showing current question difficulty -->
+            <div class="difficulty-display">
+                
+                <!-- Badge will be styled based on difficulty -->
+                <span class="difficulty-badge" id="difficulty-badge">EASY</span>
+                
+            </div>
+            
+        </div>
+        
+        <!-- ============================================================== -->
+        <!-- QUESTION CARD -->
+        <!-- Contains the question text and answer options -->
+        <!-- ============================================================== -->
+        
+        <div class="question-card" id="question-card">
+            
+            <!-- Question text display -->
+            <p class="question-text" id="question-text">Loading question...</p>
+            
+            <!-- Answer options container -->
+            <div class="options-container" id="options-container">
+                
+                <!-- Option A button -->
+                <button class="option-button" id="option-a" onclick="selectAnswer('a')">
+                    <span class="option-letter">A</span>
+                    <span class="option-text" id="option-text-a">Loading...</span>
+                </button>
+                
+                <!-- Option B button -->
+                <button class="option-button" id="option-b" onclick="selectAnswer('b')">
+                    <span class="option-letter">B</span>
+                    <span class="option-text" id="option-text-b">Loading...</span>
+                </button>
+                
+                <!-- Option C button -->
+                <button class="option-button" id="option-c" onclick="selectAnswer('c')">
+                    <span class="option-letter">C</span>
+                    <span class="option-text" id="option-text-c">Loading...</span>
+                </button>
+                
+                <!-- Option D button -->
+                <button class="option-button" id="option-d" onclick="selectAnswer('d')">
+                    <span class="option-letter">D</span>
+                    <span class="option-text" id="option-text-d">Loading...</span>
+                </button>
+                
+            </div>
+            
+        </div>
+        
+        <!-- ============================================================== -->
+        <!-- QUIZ FOOTER -->
+        <!-- Shows score and provides exit option -->
+        <!-- ============================================================== -->
+        
+        <div class="quiz-footer">
+            
+            <!-- Current score display -->
+            <div class="current-score">
+                <span class="score-label">Current Score:</span>
+                <span class="score-value" id="current-score">0 / 0</span>
+            </div>
+            
+            <!-- Exit quiz button -->
+            <button class="exit-quiz-button" onclick="confirmExit()">
+                Exit Quiz
+            </button>
+            
+        </div>
+        
+    </main>
+    
+    <!-- ================================================================== -->
+    <!-- EXIT CONFIRMATION MODAL -->
+    <!-- Shown when user tries to exit the quiz early -->
+    <!-- ================================================================== -->
+    
+    <div class="modal-overlay hidden" id="exit-modal">
+        
+        <!-- Modal content box -->
+        <div class="modal-box">
+            
+            <!-- Modal title -->
+            <h3 class="modal-title">Exit Quiz?</h3>
+            
+            <!-- Modal message -->
+            <p class="modal-message">
+                Are you sure you want to exit? Your progress will be lost and this game will not be saved.
+            </p>
+            
+            <!-- Modal buttons -->
+            <div class="modal-buttons">
+                
+                <!-- Cancel button - stays on quiz -->
+                <button class="modal-button cancel" onclick="closeExitModal()">
+                    Continue Quiz
+                </button>
+                
+                <!-- Confirm button - exits quiz -->
+                <button class="modal-button confirm" onclick="exitQuiz()">
+                    Yes, Exit
+                </button>
+                
+            </div>
+            
+        </div>
+        
+    </div>
+    
+    <!-- ================================================================== -->
+    <!-- SUBMITTING OVERLAY -->
+    <!-- Shown when submitting answers after last question -->
+    <!-- ================================================================== -->
+    
+    <div class="loading-overlay hidden" id="submitting-overlay">
+        
+        <!-- Loading spinner animation -->
+        <div class="loading-spinner"></div>
+        
+        <!-- Loading message -->
+        <p class="loading-text">Submitting your answers...</p>
+        
+        <!-- Sub-message -->
+        <p class="loading-subtext">Calculating your score...</p>
+        
+    </div>
+    
+    <!-- ================================================================== -->
+    <!-- JAVASCRIPT SECTION -->
+    <!-- Contains all the interactive functionality for this page -->
+    <!-- ================================================================== -->
+    
+    <script>
+        // ==================================================================
+        // GLOBAL VARIABLES
+        // ==================================================================
+        
+        // Array to store all quiz questions
+        let questions = [];
+        
+        // The topic of the current quiz
+        let topic = '';
+        
+        // Current question index (0-9 for 10 questions)
+        let currentQuestionIndex = 0;
+        
+        // Array to store user's selected answers
+        let userAnswers = [];
+        
+        // Current score counter
+        let currentScore = 0;
+        
+        // Flag to prevent multiple submissions
+        let isSubmitting = false;
+        
+        // ==================================================================
+        // PAGE INITIALIZATION
+        // ==================================================================
+        
+        /**
+         * Runs when the page finishes loading.
+         * Loads quiz data from sessionStorage and displays the first question.
+         */
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // Load quiz data from sessionStorage
+            loadQuizData();
+            
+        });
+        
+        // ==================================================================
+        // LOAD QUIZ DATA
+        // ==================================================================
+        
+        /**
+         * Loads the quiz questions and topic from sessionStorage.
+         * Redirects to play page if no data is found.
+         */
+        function loadQuizData() {
+            
+            // Try to get the questions from sessionStorage
+            const questionsData = sessionStorage.getItem('quizQuestions');
+            
+            // Try to get the topic from sessionStorage
+            const topicData = sessionStorage.getItem('quizTopic');
+            
+            // Check if questions data exists
+            if (!questionsData || !topicData) {
+                
+                // Alert the user that no quiz data was found
+                alert('No quiz data found. Please start a new game.');
+                
+                // Redirect to the play page
+                window.location.href = '/play';
+                
+                // Stop the function here
+                return;
+                
+            }
+            
+            // Parse the questions JSON string into an array
+            try {
+                
+                questions = JSON.parse(questionsData);
+                
+            } catch (error) {
+                
+                // Log the error for debugging
+                console.error('Error parsing quiz questions:', error);
+                
+                // Alert the user
+                alert('Error loading quiz data. Please start a new game.');
+                
+                // Redirect to the play page
+                window.location.href = '/play';
+                
+                // Stop the function here
+                return;
+                
+            }
+            
+            // Store the topic
+            topic = topicData;
+            
+            // Verify that we have exactly 10 questions
+            if (questions.length !== 10) {
+                
+                // Alert the user
+                alert('Invalid quiz data. Please start a new game.');
+                
+                // Redirect to the play page
+                window.location.href = '/play';
+                
+                // Stop the function here
+                return;
+                
+            }
+            
+            // Initialize the user answers array with empty strings
+            // One slot for each question
+            userAnswers = new Array(10).fill('');
+            
+            // Display the topic in the header
+            document.getElementById('quiz-topic').textContent = 'Topic: ' + topic;
+            
+            // Display the first question
+            displayQuestion(0);
+            
+        }
+        
+        // ==================================================================
+        // DISPLAY QUESTION
+        // ==================================================================
+        
+        /**
+         * Displays a specific question on the page.
+         * Updates the question text, options, progress, and difficulty badge.
+         * 
+         * @param {number} index - The index of the question to display (0-9)
+         */
+        function displayQuestion(index) {
+            
+            // Get the question object at the specified index
+            const question = questions[index];
+            
+            // Update the progress text (add 1 because index is 0-based)
+            document.getElementById('progress-text').textContent = 
+                'Question ' + (index + 1) + ' of 10';
+            
+            // Update the progress bar fill width
+            // Calculate percentage: (current / total) * 100
+            const progressPercent = ((index + 1) / 10) * 100;
+            document.getElementById('progress-bar-fill').style.width = progressPercent + '%';
+            
+            // Update the difficulty badge
+            const difficultyBadge = document.getElementById('difficulty-badge');
+            
+            // Set the badge text
+            difficultyBadge.textContent = question.difficulty;
+            
+            // Remove all difficulty classes first
+            difficultyBadge.classList.remove('easy', 'medium', 'hard');
+            
+            // Add the appropriate difficulty class for styling
+            difficultyBadge.classList.add(question.difficulty.toLowerCase());
+            
+            // Update the question text
+            document.getElementById('question-text').textContent = question.question;
+            
+            // Update option A text
+            document.getElementById('option-text-a').textContent = question.options.a;
+            
+            // Update option B text
+            document.getElementById('option-text-b').textContent = question.options.b;
+            
+            // Update option C text
+            document.getElementById('option-text-c').textContent = question.options.c;
+            
+            // Update option D text
+            document.getElementById('option-text-d').textContent = question.options.d;
+            
+            // Reset all option buttons to default state
+            resetOptionButtons();
+            
+            // Update the current score display
+            document.getElementById('current-score').textContent = 
+                currentScore + ' / ' + (index);
+            
+            // Add entrance animation to question card
+            const questionCard = document.getElementById('question-card');
+            
+            // Remove animation class if it exists
+            questionCard.classList.remove('slide-in');
+            
+            // Force a reflow to restart the animation
+            void questionCard.offsetWidth;
+            
+            // Add animation class
+            questionCard.classList.add('slide-in');
+            
+        }
+        
+        // ==================================================================
+        // RESET OPTION BUTTONS
+        // ==================================================================
+        
+        /**
+         * Resets all option buttons to their default state.
+         * Removes selected, correct, and incorrect classes.
+         * Re-enables all buttons.
+         */
+        function resetOptionButtons() {
+            
+            // Get all option button IDs
+            const optionIds = ['option-a', 'option-b', 'option-c', 'option-d'];
+            
+            // Loop through each option
+            for (let i = 0; i < optionIds.length; i++) {
+                
+                // Get the button element
+                const button = document.getElementById(optionIds[i]);
+                
+                // Remove all state classes
+                button.classList.remove('selected', 'correct', 'incorrect');
+                
+                // Re-enable the button
+                button.disabled = false;
+                
+            }
+            
+        }
+        
+        // ==================================================================
+        // SELECT ANSWER
+        // ==================================================================
+        
+        /**
+         * Handles when the user selects an answer option.
+         * Records the answer, shows feedback, and moves to the next question.
+         * 
+         * @param {string} selectedOption - The option letter selected ('a', 'b', 'c', or 'd')
+         */
+        function selectAnswer(selectedOption) {
+            
+            // Prevent selecting if already submitting
+            if (isSubmitting) {
+                return;
+            }
+            
+            // Get the current question
+            const question = questions[currentQuestionIndex];
+            
+            // Get the correct answer
+            const correctAnswer = question.correct.toLowerCase();
+            
+            // Store the user's answer
+            userAnswers[currentQuestionIndex] = selectedOption;
+            
+            // Disable all option buttons to prevent changing the answer
+            disableAllOptions();
+            
+            // Get the selected button element
+            const selectedButton = document.getElementById('option-' + selectedOption);
+            
+            // Add selected class to the clicked button
+            selectedButton.classList.add('selected');
+            
+            // Check if the answer is correct
+            if (selectedOption === correctAnswer) {
+                
+                // Increment the score
+                currentScore++;
+                
+                // Add correct class to show green highlight
+                selectedButton.classList.add('correct');
+                
+            } else {
+                
+                // Add incorrect class to show red highlight
+                selectedButton.classList.add('incorrect');
+                
+                // Show the correct answer with green highlight
+                const correctButton = document.getElementById('option-' + correctAnswer);
+                correctButton.classList.add('correct');
+                
+            }
+            
+            // Wait a moment before moving to the next question
+            // This allows the user to see the feedback
+            setTimeout(function() {
+                
+                // Move to the next question or submit if this was the last one
+                moveToNextQuestion();
+                
+            }, 1000);
+            
+        }
+        
+        // ==================================================================
+        // DISABLE ALL OPTIONS
+        // ==================================================================
+        
+        /**
+         * Disables all option buttons to prevent multiple selections.
+         */
+        function disableAllOptions() {
+            
+            // Get all option button IDs
+            const optionIds = ['option-a', 'option-b', 'option-c', 'option-d'];
+            
+            // Loop through each option
+            for (let i = 0; i < optionIds.length; i++) {
+                
+                // Get the button element
+                const button = document.getElementById(optionIds[i]);
+                
+                // Disable the button
+                button.disabled = true;
+                
+            }
+            
+        }
+        
+        // ==================================================================
+        // MOVE TO NEXT QUESTION
+        // ==================================================================
+        
+        /**
+         * Moves to the next question or submits the quiz if all questions are answered.
+         */
+        function moveToNextQuestion() {
+            
+            // Increment the question index
+            currentQuestionIndex++;
+            
+            // Check if there are more questions
+            if (currentQuestionIndex < 10) {
+                
+                // Display the next question
+                displayQuestion(currentQuestionIndex);
+                
+            } else {
+                
+                // All questions answered - submit the quiz
+                submitQuiz();
+                
+            }
+            
+        }
+        
+        // ==================================================================
+        // SUBMIT QUIZ
+        // ==================================================================
+        
+        /**
+         * Submits the quiz answers to the server and redirects to results page.
+         */
+        async function submitQuiz() {
+            
+            // Set flag to prevent duplicate submissions
+            isSubmitting = true;
+            
+            // Show the submitting overlay
+            document.getElementById('submitting-overlay').classList.remove('hidden');
+            
+            try {
+                
+                // Send a POST request to the game submit API endpoint
+                const response = await fetch('/api/game/submit', {
+                    
+                    // Use POST method for sending data
+                    method: 'POST',
+                    
+                    // Set the content type to JSON
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    
+                    // Convert the quiz data to a JSON string
+                    body: JSON.stringify({
+                        answers: userAnswers,
+                        topic: topic
+                    })
+                    
+                });
+                
+                // Parse the JSON response from the server
+                const data = await response.json();
+                
+                // Check if submission was successful
+                if (data.success) {
+                    
+                    // Store the results in sessionStorage for the results page
+                    sessionStorage.setItem('quizResults', JSON.stringify(data));
+                    
+                    // Clear the quiz questions from sessionStorage
+                    sessionStorage.removeItem('quizQuestions');
+                    
+                    // Redirect to the results page
+                    window.location.href = '/results';
+                    
+                } else {
+                    
+                    // Hide the submitting overlay
+                    document.getElementById('submitting-overlay').classList.add('hidden');
+                    
+                    // Show error message
+                    alert('Error submitting quiz: ' + data.message);
+                    
+                    // Reset submitting flag
+                    isSubmitting = false;
+                    
+                }
+                
+            } catch (error) {
+                
+                // Log the error for debugging
+                console.error('Error submitting quiz:', error);
+                
+                // Hide the submitting overlay
+                document.getElementById('submitting-overlay').classList.add('hidden');
+                
+                // Show error message
+                alert('An error occurred while submitting your quiz. Please try again.');
+                
+                // Reset submitting flag
+                isSubmitting = false;
+                
+            }
+            
+        }
+        
+        // ==================================================================
+        // EXIT QUIZ FUNCTIONS
+        // ==================================================================
+        
+        /**
+         * Shows the exit confirmation modal.
+         */
+        function confirmExit() {
+            
+            // Get the exit modal element
+            const exitModal = document.getElementById('exit-modal');
+            
+            // Remove the hidden class to show the modal
+            exitModal.classList.remove('hidden');
+            
+        }
+        
+        /**
+         * Closes the exit confirmation modal.
+         */
+        function closeExitModal() {
+            
+            // Get the exit modal element
+            const exitModal = document.getElementById('exit-modal');
+            
+            // Add the hidden class to hide the modal
+            exitModal.classList.add('hidden');
+            
+        }
+        
+        /**
+         * Exits the quiz and returns to the home page.
+         * Quiz progress is not saved.
+         */
+        function exitQuiz() {
+            
+            // Clear quiz data from sessionStorage
+            sessionStorage.removeItem('quizQuestions');
+            sessionStorage.removeItem('quizTopic');
+            
+            // Redirect to home page
+            window.location.href = '/home';
+            
+        }
+        
+        // ==================================================================
+        // KEYBOARD NAVIGATION
+        // ==================================================================
+        
+        /**
+         * Allows users to select answers using keyboard keys 1-4 or A-D.
+         */
+        document.addEventListener('keydown', function(event) {
+            
+            // Prevent keyboard input if submitting
+            if (isSubmitting) {
+                return;
+            }
+            
+            // Get the pressed key
+            const key = event.key.toLowerCase();
+            
+            // Map keyboard keys to options
+            const keyMap = {
+                '1': 'a',
+                '2': 'b',
+                '3': 'c',
+                '4': 'd',
+                'a': 'a',
+                'b': 'b',
+                'c': 'c',
+                'd': 'd'
+            };
+            
+            // Check if the pressed key is a valid option key
+            if (keyMap.hasOwnProperty(key)) {
+                
+                // Get the corresponding option
+                const option = keyMap[key];
+                
+                // Check if the option button is enabled
+                const button = document.getElementById('option-' + option);
+                
+                if (!button.disabled) {
+                    
+                    // Select the answer
+                    selectAnswer(option);
+                    
+                }
+                
+            }
+            
+            // Handle Escape key to show exit modal
+            if (event.key === 'Escape') {
+                
+                // Check if exit modal is already open
+                const exitModal = document.getElementById('exit-modal');
+                
+                if (exitModal.classList.contains('hidden')) {
+                    
+                    // Show the exit modal
+                    confirmExit();
+                    
+                } else {
+                    
+                    // Close the exit modal
+                    closeExitModal();
+                    
+                }
+                
+            }
+            
+        });
+        
+        // ==================================================================
+        // PREVENT ACCIDENTAL PAGE LEAVE
+        // ==================================================================
+        
+        /**
+         * Shows a warning when user tries to leave the page during a quiz.
+         */
+        window.addEventListener('beforeunload', function(event) {
+            
+            // Only show warning if quiz is in progress and not submitting
+            if (currentQuestionIndex > 0 && !isSubmitting) {
+                
+                // Set the return value to show the browser's confirmation dialog
+                event.returnValue = 'You have an unfinished quiz. Are you sure you want to leave?';
+                
+                // Return the message for older browsers
+                return 'You have an unfinished quiz. Are you sure you want to leave?';
+                
+            }
+            
+        });
+        
+    </script>
+    
+</body>
+</html>

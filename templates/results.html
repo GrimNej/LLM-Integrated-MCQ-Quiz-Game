@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- ================================================================== -->
+    <!-- HEAD SECTION -->
+    <!-- Contains metadata, title, and links to stylesheets -->
+    <!-- ================================================================== -->
+    
+    <!-- Set the character encoding for the document to UTF-8 -->
+    <meta charset="UTF-8">
+    
+    <!-- Make the page responsive on mobile devices -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Title that appears in the browser tab -->
+    <title>MCQ Quiz Game - Results</title>
+    
+    <!-- Link to our external CSS stylesheet for styling -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="results-page">
+    <!-- ================================================================== -->
+    <!-- NO HEADER NAVIGATION BAR ON THIS PAGE -->
+    <!-- This provides a focused results experience -->
+    <!-- ================================================================== -->
+    
+    <!-- ================================================================== -->
+    <!-- MAIN RESULTS CONTAINER -->
+    <!-- Contains all results elements centered on the page -->
+    <!-- ================================================================== -->
+    
+    <main class="results-container">
+        
+        <!-- ============================================================== -->
+        <!-- RESULTS CARD -->
+        <!-- Main card showing the quiz results -->
+        <!-- ============================================================== -->
+        
+        <div class="results-card" id="results-card">
+            
+            <!-- ========================================================== -->
+            <!-- RESULT STATUS -->
+            <!-- Shows WIN or LOSE status with appropriate styling -->
+            <!-- ========================================================== -->
+            
+            <div class="result-status" id="result-status">
+                
+                <!-- Status text - will be "YOU WON!" or "TRY AGAIN" -->
+                <h1 class="status-text" id="status-text">Loading...</h1>
+                
+            </div>
+            
+            <!-- ========================================================== -->
+            <!-- SCORE DISPLAY -->
+            <!-- Shows the numerical score (e.g., 8/10) -->
+            <!-- ========================================================== -->
+            
+            <div class="score-display">
+                
+                <!-- Large score number -->
+                <span class="score-number" id="score-number">0</span>
+                
+                <!-- Score separator -->
+                <span class="score-separator">/</span>
+                
+                <!-- Total questions -->
+                <span class="score-total">10</span>
+                
+            </div>
+            
+            <!-- Score label -->
+            <p class="score-label">Correct Answers</p>
+            
+            <!-- ========================================================== -->
+            <!-- RESULT MESSAGE -->
+            <!-- Personalized message based on performance -->
+            <!-- ========================================================== -->
+            
+            <div class="result-message" id="result-message">
+                
+                <!-- Message text - customized based on score and topic -->
+                <p class="message-text" id="message-text">Loading your results...</p>
+                
+            </div>
+            
+            <!-- ========================================================== -->
+            <!-- TOPIC DISPLAY -->
+            <!-- Shows what topic the quiz was about -->
+            <!-- ========================================================== -->
+            
+            <div class="topic-display">
+                
+                <!-- Topic label -->
+                <span class="topic-label">Topic:</span>
+                
+                <!-- Topic name -->
+                <span class="topic-name" id="topic-name">Loading...</span>
+                
+            </div>
+            
+            <!-- ========================================================== -->
+            <!-- SCORE BREAKDOWN -->
+            <!-- Shows performance by difficulty level -->
+            <!-- ========================================================== -->
+            
+            <div class="score-breakdown" id="score-breakdown">
+                
+                <!-- Breakdown title -->
+                <h3 class="breakdown-title">Score Breakdown</h3>
+                
+                <!-- Breakdown container -->
+                <div class="breakdown-container">
+                    
+                    <!-- Easy questions breakdown -->
+                    <div class="breakdown-item">
+                        <span class="breakdown-label easy">EASY (1-5)</span>
+                        <span class="breakdown-value" id="easy-score">0/5</span>
+                    </div>
+                    
+                    <!-- Medium questions breakdown -->
+                    <div class="breakdown-item">
+                        <span class="breakdown-label medium">MEDIUM (6-8)</span>
+                        <span class="breakdown-value" id="medium-score">0/3</span>
+                    </div>
+                    
+                    <!-- Hard questions breakdown -->
+                    <div class="breakdown-item">
+                        <span class="breakdown-label hard">HARD (9-10)</span>
+                        <span class="breakdown-value" id="hard-score">0/2</span>
+                    </div>
+                    
+                </div>
+                
+            </div>
+            
+            <!-- ========================================================== -->
+            <!-- ACTION BUTTONS -->
+            <!-- Navigation options after viewing results -->
+            <!-- ========================================================== -->
+            
+            <div class="results-actions">
+                
+                <!-- Play Again button - goes to game setup page -->
+                <a href="/play" class="results-button primary">
+                    Play Again
+                </a>
+                
+                <!-- View Leaderboard button - goes to leaderboard page -->
+                <a href="/leaderboard" class="results-button secondary">
+                    View Leaderboard
+                </a>
+                
+            </div>
+            
+            <!-- Go Home link -->
+            <a href="/home" class="home-link">Go to Home</a>
+            
+        </div>
+        
+    </main>
+    
+    <!-- ================================================================== -->
+    <!-- CONFETTI CANVAS -->
+    <!-- Used for celebration animation when user wins -->
+    <!-- ================================================================== -->
+    
+    <canvas id="confetti-canvas"></canvas>
+    
+    <!-- ================================================================== -->
+    <!-- JAVASCRIPT SECTION -->
+    <!-- Contains all the interactive functionality for this page -->
+    <!-- ================================================================== -->
+    
+    <script>
+        // ==================================================================
+        // GLOBAL VARIABLES
+        // ==================================================================
+        
+        // Store the quiz results data
+        let resultsData = null;
+        
+        // ==================================================================
+        // PAGE INITIALIZATION
+        // ==================================================================
+        
+        /**
+         * Runs when the page finishes loading.
+         * Loads results data from sessionStorage and displays the results.
+         */
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // Load and display the results
+            loadResults();
+            
+        });
+        
+        // ==================================================================
+        // LOAD RESULTS
+        // ==================================================================
+        
+        /**
+         * Loads the quiz results from sessionStorage.
+         * Redirects to home page if no results are found.
+         */
+        function loadResults() {
+            
+            // Try to get the results from sessionStorage
+            const resultsString = sessionStorage.getItem('quizResults');
+            
+            // Check if results data exists
+            if (!resultsString) {
+                
+                // Alert the user that no results were found
+                alert('No quiz results found. Please play a game first.');
+                
+                // Redirect to the home page
+                window.location.href = '/home';
+                
+                // Stop the function here
+                return;
+                
+            }
+            
+            // Parse the results JSON string into an object
+            try {
+                
+                resultsData = JSON.parse(resultsString);
+                
+            } catch (error) {
+                
+                // Log the error for debugging
+                console.error('Error parsing results data:', error);
+                
+                // Alert the user
+                alert('Error loading results. Please play a new game.');
+                
+                // Redirect to the home page
+                window.location.href = '/home';
+                
+                // Stop the function here
+                return;
+                
+            }
+            
+            // Display the results on the page
+            displayResults();
+            
+            // Clear the results from sessionStorage
+            // This prevents showing stale results if user refreshes
+            sessionStorage.removeItem('quizResults');
+            
+            // Also clear the topic
+            sessionStorage.removeItem('quizTopic');
+            
+        }
+        
+        // ==================================================================
+        // DISPLAY RESULTS
+        // ==================================================================
+        
+        /**
+         * Displays the quiz results on the page.
+         * Updates all result elements with the data.
+         */
+        function displayResults() {
+            
+            // Get the score from results data
+            const score = resultsData.score;
+            
+            // Get the result (WON or LOST)
+            const result = resultsData.result;
+            
+            // Get the topic
+            const topic = resultsData.topic;
+            
+            // Get the detailed results array
+            const detailedResults = resultsData.detailed_results;
+            
+            // ==============================================================
+            // UPDATE RESULT STATUS
+            // ==============================================================
+            
+            // Get the result status container
+            const resultStatus = document.getElementById('result-status');
+            
+            // Get the status text element
+            const statusText = document.getElementById('status-text');
+            
+            // Check if user won or lost
+            if (result === 'WON') {
+                
+                // Set winning status text
+                statusText.textContent = 'YOU WON!';
+                
+                // Add winning class for green styling
+                resultStatus.classList.add('won');
+                
+                // Trigger confetti celebration
+                triggerConfetti();
+                
+            } else {
+                
+                // Set losing status text
+                statusText.textContent = 'TRY AGAIN';
+                
+                // Add losing class for red styling
+                resultStatus.classList.add('lost');
+                
+            }
+            
+            // ==============================================================
+            // UPDATE SCORE DISPLAY
+            // ==============================================================
+            
+            // Update the score number with animation
+            animateScore(score);
+            
+            // ==============================================================
+            // UPDATE RESULT MESSAGE
+            // ==============================================================
+            
+            // Get the message text element
+            const messageText = document.getElementById('message-text');
+            
+            // Generate a personalized message based on score
+            let message = '';
+            
+            if (score === 10) {
+                
+                // Perfect score message
+                message = 'Perfect score! You are a true expert on ' + topic + '!';
+                
+            } else if (score >= 9) {
+                
+                // Excellent score message
+                message = 'Excellent! You really know your stuff about ' + topic + '!';
+                
+            } else if (score >= 7) {
+                
+                // Good score (won) message
+                message = 'Congratulations! You have great knowledge about ' + topic + '!';
+                
+            } else if (score >= 5) {
+                
+                // Decent score (lost) message
+                message = 'Good effort! Keep learning more about ' + topic + ' and try again!';
+                
+            } else if (score >= 3) {
+                
+                // Low score message
+                message = 'Not bad! There is room to improve on ' + topic + '. Keep trying!';
+                
+            } else {
+                
+                // Very low score message
+                message = 'Keep practicing! Learning about ' + topic + ' takes time. You will get better!';
+                
+            }
+            
+            // Set the message text
+            messageText.textContent = message;
+            
+            // ==============================================================
+            // UPDATE TOPIC DISPLAY
+            // ==============================================================
+            
+            // Update the topic name
+            document.getElementById('topic-name').textContent = topic;
+            
+            // ==============================================================
+            // UPDATE SCORE BREAKDOWN
+            // ==============================================================
+            
+            // Calculate breakdown by difficulty
+            let easyCorrect = 0;
+            let mediumCorrect = 0;
+            let hardCorrect = 0;
+            
+            // Loop through detailed results to count correct answers by difficulty
+            for (let i = 0; i < detailedResults.length; i++) {
+                
+                // Get the current result
+                const questionResult = detailedResults[i];
+                
+                // Check if the answer was correct
+                if (questionResult.is_correct) {
+                    
+                    // Increment the appropriate counter based on difficulty
+                    if (questionResult.difficulty === 'EASY') {
+                        
+                        easyCorrect++;
+                        
+                    } else if (questionResult.difficulty === 'MEDIUM') {
+                        
+                        mediumCorrect++;
+                        
+                    } else if (questionResult.difficulty === 'HARD') {
+                        
+                        hardCorrect++;
+                        
+                    }
+                    
+                }
+                
+            }
+            
+            // Update the breakdown display
+            document.getElementById('easy-score').textContent = easyCorrect + '/5';
+            document.getElementById('medium-score').textContent = mediumCorrect + '/3';
+            document.getElementById('hard-score').textContent = hardCorrect + '/2';
+            
+            // ==============================================================
+            // ADD ENTRANCE ANIMATION
+            // ==============================================================
+            
+            // Get the results card
+            const resultsCard = document.getElementById('results-card');
+            
+            // Add the entrance animation class
+            resultsCard.classList.add('fade-in');
+            
+        }
+        
+        // ==================================================================
+        // ANIMATE SCORE
+        // ==================================================================
+        
+        /**
+         * Animates the score counting up from 0 to the final score.
+         * Creates a more engaging reveal of the score.
+         * 
+         * @param {number} finalScore - The final score to display
+         */
+        function animateScore(finalScore) {
+            
+            // Get the score number element
+            const scoreElement = document.getElementById('score-number');
+            
+            // Start from 0
+            let currentCount = 0;
+            
+            // Calculate the interval duration
+            // Faster animation for higher scores, slower for lower
+            const duration = 1000; // Total animation time in milliseconds
+            const interval = duration / finalScore; // Time between each increment
+            
+            // If score is 0, just display 0
+            if (finalScore === 0) {
+                
+                scoreElement.textContent = '0';
+                return;
+                
+            }
+            
+            // Create an interval to increment the count
+            const counter = setInterval(function() {
+                
+                // Increment the counter
+                currentCount++;
+                
+                // Update the display
+                scoreElement.textContent = currentCount;
+                
+                // Check if we have reached the final score
+                if (currentCount >= finalScore) {
+                    
+                    // Stop the interval
+                    clearInterval(counter);
+                    
+                }
+                
+            }, interval);
+            
+        }
+        
+        // ==================================================================
+        // CONFETTI ANIMATION
+        // ==================================================================
+        
+        /**
+         * Triggers a confetti celebration animation when user wins.
+         * Uses canvas to draw falling confetti particles.
+         */
+        function triggerConfetti() {
+            
+            // Get the confetti canvas element
+            const canvas = document.getElementById('confetti-canvas');
+            
+            // Get the 2D drawing context
+            const ctx = canvas.getContext('2d');
+            
+            // Set canvas size to match window
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            
+            // Make canvas visible
+            canvas.style.display = 'block';
+            
+            // Array to store confetti particles
+            const particles = [];
+            
+            // Colors for confetti
+            const colors = ['#4CAF50', '#8BC34A', '#CDDC39', '#FFEB3B', '#FFC107', '#FF9800'];
+            
+            // Number of confetti particles
+            const particleCount = 150;
+            
+            // Create confetti particles
+            for (let i = 0; i < particleCount; i++) {
+                
+                particles.push({
+                    
+                    // Random x position across the screen
+                    x: Math.random() * canvas.width,
+                    
+                    // Start above the screen
+                    y: Math.random() * canvas.height - canvas.height,
+                    
+                    // Random size between 5 and 15 pixels
+                    size: Math.random() * 10 + 5,
+                    
+                    // Random falling speed
+                    speedY: Math.random() * 3 + 2,
+                    
+                    // Random horizontal drift
+                    speedX: Math.random() * 2 - 1,
+                    
+                    // Random color from the colors array
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    
+                    // Random rotation
+                    rotation: Math.random() * 360,
+                    
+                    // Random rotation speed
+                    rotationSpeed: Math.random() * 10 - 5
+                    
+                });
+                
+            }
+            
+            // Animation frame counter
+            let frameCount = 0;
+            
+            // Maximum frames before stopping (about 5 seconds at 60fps)
+            const maxFrames = 300;
+            
+            /**
+             * Draws a single frame of the confetti animation.
+             */
+            function drawFrame() {
+                
+                // Increment frame counter
+                frameCount++;
+                
+                // Clear the canvas
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Draw each particle
+                for (let i = 0; i < particles.length; i++) {
+                    
+                    // Get the current particle
+                    const p = particles[i];
+                    
+                    // Save the current canvas state
+                    ctx.save();
+                    
+                    // Move to particle position
+                    ctx.translate(p.x, p.y);
+                    
+                    // Rotate the particle
+                    ctx.rotate(p.rotation * Math.PI / 180);
+                    
+                    // Set the fill color
+                    ctx.fillStyle = p.color;
+                    
+                    // Draw a rectangle for the confetti piece
+                    ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size / 2);
+                    
+                    // Restore the canvas state
+                    ctx.restore();
+                    
+                    // Update particle position
+                    p.y += p.speedY;
+                    p.x += p.speedX;
+                    p.rotation += p.rotationSpeed;
+                    
+                    // If particle goes off screen, reset it to the top
+                    if (p.y > canvas.height) {
+                        
+                        p.y = -p.size;
+                        p.x = Math.random() * canvas.width;
+                        
+                    }
+                    
+                }
+                
+                // Continue animation if not reached max frames
+                if (frameCount < maxFrames) {
+                    
+                    // Request the next animation frame
+                    requestAnimationFrame(drawFrame);
+                    
+                } else {
+                    
+                    // Fade out and hide the canvas
+                    canvas.style.opacity = '0';
+                    
+                    // Remove the canvas after fade out
+                    setTimeout(function() {
+                        
+                        canvas.style.display = 'none';
+                        canvas.style.opacity = '1';
+                        
+                    }, 500);
+                    
+                }
+                
+            }
+            
+            // Start the animation
+            drawFrame();
+            
+        }
+        
+        // ==================================================================
+        // HANDLE WINDOW RESIZE
+        // ==================================================================
+        
+        /**
+         * Resizes the confetti canvas when the window is resized.
+         */
+        window.addEventListener('resize', function() {
+            
+            // Get the confetti canvas
+            const canvas = document.getElementById('confetti-canvas');
+            
+            // Update canvas size
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            
+        });
+        
+    </script>
+    
+</body>
+</html>

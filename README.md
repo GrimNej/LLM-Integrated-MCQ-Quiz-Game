@@ -52,7 +52,6 @@ The cool part? The questions are created by Google's Gemini AI. So you can pick 
 
 *Results Page - See how well you did*
 
-*(Add your own screenshots here after running the project)*
 
 ---
 

@@ -6,28 +6,35 @@
 
 # Flask - Web framework for Python
 # Used to create the web application, handle routes, and manage sessions
-Flask==3.0.0
+#Flask==3.0.0
+Flask
 
 # MySQL Connector - Database connection library
 # Used to connect Python with MySQL database
 mysql-connector-python==8.2.0
+#mysql-connector-python
 
 # Python Dotenv - Environment variable loader
 # Used to load API keys and secrets from .env file
-python-dotenv==1.0.0
+#python-dotenv==1.0.0
+python-dotenv
 
 # LangChain Google GenAI - Google Gemini API integration
 # Used to interact with Google's Gemini AI model
-langchain-google-genai==1.0.10
+#langchain-google-genai==1.0.10
+langchain-google-genai
 
 # LangChain Core - Core LangChain components
 # Used for prompt templates and output parsing
-langchain-core==0.2.10
+#langchain-core==0.2.10
+langchain-core
 
 # Werkzeug - WSGI utilities (installed with Flask, but listed for clarity)
 # Used for various web utilities
-Werkzeug==3.0.1
+#Werkzeug==3.0.1
+Werkzeug
 
 # Jinja2 - Template engine (installed with Flask, but listed for clarity)
 # Used for rendering HTML templates
-Jinja2==3.1.2
+#Jinja2==3.1.2
+Jinja2

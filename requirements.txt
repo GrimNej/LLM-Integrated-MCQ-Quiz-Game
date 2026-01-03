@@ -1,0 +1,33 @@
+# ============================================================================
+# requirements.txt
+# Python package dependencies for MCQ Quiz Game
+# Install all packages with: pip install -r requirements.txt
+# ============================================================================
+
+# Flask - Web framework for Python
+# Used to create the web application, handle routes, and manage sessions
+Flask==3.0.0
+
+# MySQL Connector - Database connection library
+# Used to connect Python with MySQL database
+mysql-connector-python==8.2.0
+
+# Python Dotenv - Environment variable loader
+# Used to load API keys and secrets from .env file
+python-dotenv==1.0.0
+
+# LangChain Google GenAI - Google Gemini API integration
+# Used to interact with Google's Gemini AI model
+langchain-google-genai==1.0.10
+
+# LangChain Core - Core LangChain components
+# Used for prompt templates and output parsing
+langchain-core==0.2.10
+
+# Werkzeug - WSGI utilities (installed with Flask, but listed for clarity)
+# Used for various web utilities
+Werkzeug==3.0.1
+
+# Jinja2 - Template engine (installed with Flask, but listed for clarity)
+# Used for rendering HTML templates
+Jinja2==3.1.2

@@ -170,13 +170,13 @@ In your mcq_quiz_game folder, create a new file named requirements.txt
 
 Copy and paste this content:
 ```sh
-Flask==3.0.0
-mysql-connector-python==8.2.0
-python-dotenv==1.0.0
-langchain-google-genai==1.0.10
-langchain-core==0.2.10
-Werkzeug==3.0.1
-Jinja2==3.1.2
+Flask
+mysql-connector-python
+python-dotenv
+langchain-google-genai
+langchain-core
+Werkzeug
+Jinja2
 ```
 Save the file
 

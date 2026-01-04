@@ -44,14 +44,38 @@ The cool part? The questions are created by Google's Gemini AI. So you can pick 
 
 ## Screenshots
 
-*Login Page - Where you sign in or create an account*
+*Login Page - Where you Log in from*
 
+![Login Page](Markdown/Login-Page.png)
+---
+*SignUp Page - Where you create an account if you don't have one*
+
+![SignUp Page](Markdown/Signup-page.png)
+
+---
 *Home Page - See your stats and game history*
 
+![Home Page](Markdown/Home-page.png)
+
+---
+
+*Play Page - Pick a topic of your interest for the MCQ Quiz*
+
+![Play-Page](Markdown/Start-Page.png)
+
+---
 *Quiz Page - Answer questions and test your knowledge*
 
+![Questions Page](Markdown/Questions-Page.png)
+---
 *Results Page - See how well you did*
 
+![Result-Won](Markdown/Result-Page.png)
+
+---
+*Account Page - Make Changes to your Account*
+
+![Account-Page](Markdown/AccountFull-Page.png)
 
 ---
 

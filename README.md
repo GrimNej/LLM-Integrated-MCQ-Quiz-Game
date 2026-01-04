@@ -113,6 +113,12 @@ mcq_quiz_game/
 |-- database.sql
 |-- .env (create this with your GOOGLE_API_KEY)
 |
+|-- Markdown/
+|   |-- Screenshot.Login-Page.png
+|   |-- Screenshot.Home-Page.png
+|   |-- Screenshot.Account-Page.png
+|   |-- Screenshot.Quiz-Page.png
+|
 |-- static/
 |   |-- css/
 |   |   |-- style.css
